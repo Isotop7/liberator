@@ -203,9 +203,41 @@ func deleteBookEndpoint(ctx *gin.Context) {
 	}
 }
 
+func getActiveBooks() []Book {
+	var books = []Book{}
+	err := DB.Limit(5).Find(&books)
+	if err != nil {
+		return books
+	} else {
+		return nil
+	}
+}
+
+func getLatestBooks() []Book {
+	var books = []Book{}
+	err := DB.Order("created_at desc").Limit(5).Find(&books)
+	if err != nil {
+		return books
+	} else {
+		return nil
+	}
+}
+
 func showDashboard(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "dashboard.tmpl", gin.H{
-		"title": "liberator",
+		"readPages":   "readPages",
+		"username":    "username",
+		"activeBooks": getActiveBooks(),
+		"latestBooks": getLatestBooks(),
+	})
+}
+
+func showBook(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "showBook.tmpl", gin.H{
+		"Book": Book{
+			Title:  "Test",
+			Author: "Joanne K. Rowling",
+		},
 	})
 }
 
@@ -228,7 +260,7 @@ func main() {
 	// Books
 	router.GET("/books", listBooksEndpoint)
 	router.POST("/books", createBookEndpoint)
-	router.GET("/books/:id", listBookEndpoint)
+	router.GET("/books/:id", showBook)
 	router.PUT("/books/:id", updateBookEndpoint)
 	router.DELETE("/books/:id", deleteBookEndpoint)
 

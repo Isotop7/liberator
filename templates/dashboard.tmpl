@@ -2,15 +2,76 @@
 {{ template "base.tmpl" }}
 {{ template "headerbar.tmpl" }}
 
+
+<section class="hero is-info">
+  <div class="hero-body container has-text-centered is-widescreen">
+    <p class="title">
+      Hallo, {{.username}}!
+    </p>
+    <p class="subtitle">
+      Du hast bislang {{.readPages}} Seiten gelesen.
+    </p>
+  </div>
+</section>
+
 <section class="section">
-    <div class="container">
-        <h1 class="title">liberator</h1>
-        <p class="subtitle">
-            Luk @ ma bukz, bruv. 
-        </p>
+    <div class="container is-widescreen">
+        <div class="columns">
+            <div class="column is-half">
+                <p class="is-size-4">
+                    Aktive Bücher:
+                </p>
+                <br>
+                <p>
+                    <table class="table">
+                        <thead>
+                            <th>Titel</th>
+                            <th>Autor</th>
+                            <th>Sprache</th>
+                            <th>Kategorie</th>
+                        </thead>
+                        <tbody>
+                            {{range .activeBooks}}
+                            <tr>
+                                <td><a href="/books/{{.Model.ID}}">{{.Title}}</a></td>
+                                <td>{{.Author}}</td>
+                                <td>{{.Language}}</td>
+                                <td>{{.Category}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </p>
+            </div>
+            <div class="column is-half">
+                <p class="is-size-4">
+                    Neue Bücher:
+                </p>
+                <br>
+                <p>
+                    <table class="table">
+                        <thead>
+                            <th>Titel</th>
+                            <th>Autor</th>
+                            <th>Sprache</th>
+                            <th>Kategorie</th>
+                        </thead>
+                        <tbody>
+                            {{range .latestBooks}}
+                            <tr>
+                                <td><a href="/books/{{.Model.ID}}">{{.Title}}</a></td>
+                                <td>{{.Author}}</td>
+                                <td>{{.Language}}</td>
+                                <td>{{.Category}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </p>
+            </div>
+        </div>
     </div>
 </section>
 
 {{ template "footer.tmpl" }}
-
 {{ end }}

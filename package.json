@@ -1,5 +1,13 @@
 {
   "dependencies": {
     "bulma": "^0.9.4"
+  },
+  "devDependencies": {
+    "node-sass": "^7.0.1"
+  },
+  "scripts": {
+    "css-build": "node-sass --omit-source-map-url static/css/liberator.sass static/css/liberator.css",
+    "css-watch": "npm run css-build -- --watch",
+    "start": "npm run css-watch"
   }
 }
