@@ -1,45 +1,12 @@
 package main
 
 import (
-	"encoding/json"
+	"html/template"
 	"log"
 	"net/http"
-	"strconv"
-
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-var DB *gorm.DB
-
-// Book
-type Book struct {
-	gorm.Model
-	Title     string `json:"title"`
-	Author    string `json:"author"`
-	Language  string `json:"language"`
-	Category  string `json:"category"`
-	ISBN10    string `json:"isbn10" binding:"len=10"`
-	ISBN13    string `json:"isbn13" binding:"len=13"`
-	PageCount int    `json:"page_count"`
-	Rating    int    `json:"rating"`
-}
-
-// Connect to database
-func connectDatabase() {
-	db, err := gorm.Open("sqlite3", "liberator.db")
-
-	if err != nil {
-		panic("Failed to connect to database!")
-	}
-
-	db.AutoMigrate(&Book{})
-
-	DB = db
-}
-
-// List all Books
+/*// List all Books
 func listBooksEndpoint(ctx *gin.Context) {
 	var books = []Book{}
 	err := DB.Find(&books)
@@ -221,17 +188,69 @@ func getLatestBooks() []Book {
 	} else {
 		return nil
 	}
-}
+}*/
 
-func showDashboard(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "dashboard.tmpl", gin.H{
+func dashboard(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/" {
+		http.Redirect(w, r, "/dashboard", http.StatusMovedPermanently)
+		return
+	} else if r.URL.Path == "/dashboard" {
+	} else {
+		http.NotFound(w, r)
+		return
+	}
+
+	files := []string{
+		"./assets/templates/base.tmpl",
+		"./assets/templates/partials/nav.tmpl",
+		"./assets/templates/partials/footer.tmpl",
+		"./assets/templates/pages/dashboard.tmpl",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(w, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+	}
+
+	/*ctx.HTML(http.StatusOK, "dashboard.tmpl", gin.H{
 		"readPages":   "readPages",
 		"username":    "username",
 		"activeBooks": getActiveBooks(),
 		"latestBooks": getLatestBooks(),
-	})
+	})*/
 }
 
+func book(w http.ResponseWriter, r *http.Request) {
+	files := []string{
+		"./assets/templates/base.tmpl",
+		"./assets/templates/partials/nav.tmpl",
+		"./assets/templates/partials/footer.tmpl",
+		"./assets/templates/pages/book.tmpl",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.ExecuteTemplate(w, "base", nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+	}
+}
+
+/*
 func showBook(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "showBook.tmpl", gin.H{
 		"Book": Book{
@@ -239,37 +258,4 @@ func showBook(ctx *gin.Context) {
 			Author: "Joanne K. Rowling",
 		},
 	})
-}
-
-// Main function
-func main() {
-	log.Println("Starting liberator ...")
-
-	log.Println("Setup database ...")
-	connectDatabase()
-
-	// Setup handlers
-	router := gin.Default()
-
-	// Index handler
-	router.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/dashboard")
-	})
-	router.GET("/dashboard", showDashboard)
-
-	// Books
-	router.GET("/books", listBooksEndpoint)
-	router.POST("/books", createBookEndpoint)
-	router.GET("/books/:id", showBook)
-	router.PUT("/books/:id", updateBookEndpoint)
-	router.DELETE("/books/:id", deleteBookEndpoint)
-
-	// Serve static files
-	router.Static("/static", "./static")
-
-	// Load templates
-	router.LoadHTMLGlob("templates/*")
-
-	// Serve API
-	log.Fatal(router.Run(":5000"))
-}
+}*/

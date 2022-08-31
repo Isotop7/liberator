@@ -1,7 +1,6 @@
-{{define "base.tmpl"}}
-
-<!DOCTYPE html>
-<html>
+{{define "base"}}
+<!doctype html>
+<html lang="de">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,5 +8,7 @@
     <link rel="stylesheet" href="/static/css/liberator.css">
 </head>
 <body class="has-navbar-fixed-top">
-
+  {{template "nav" .}}
+  {{template "main" .}}
+  {{template "footer" .}}
 {{end}}
