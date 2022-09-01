@@ -1,6 +1,10 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/justinas/alice"
+)
 
 func (liberator *liberator) routes() http.Handler {
 	// Setup mux
@@ -18,5 +22,8 @@ func (liberator *liberator) routes() http.Handler {
 	mux.HandleFunc("/book/create", liberator.bookCreate)
 	mux.HandleFunc("/book/view", liberator.bookView)
 
-	return liberator.recoverPanic(liberator.logRequest(secureHeaders(mux)))
+	// Default middleware chain
+	defaultChain := alice.New(liberator.recoverPanic, liberator.logRequest, secureHeaders)
+
+	return defaultChain.Then(mux)
 }
