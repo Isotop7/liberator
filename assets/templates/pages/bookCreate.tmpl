@@ -1,0 +1,85 @@
+{{define "main"}}
+<section class="section">
+    <div class="columns is-mobile">
+        <div class="column box is-half is-offset-one-quarter p-5">
+            <p class="is-size-4 my-4">Neues Buch erstellen:</p>
+            <form action="/book/create" method="POST">
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Titel:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-small is-primary" type="text" name="title">
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Autor:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-small is-primary" type="text" name="author">
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Sprache:</label>
+                    </div>
+                    <div class="level-right column">
+                        <p>
+                            <input type="radio" name="language" value="Deutsch" checked>Deutsch
+                        </p>
+                        <p>
+                            <input type="radio" name="language" value="Englisch">Englisch
+                        </p>
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Kategorie:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-small is-primary" type="text" name="category">
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>ISBN-10:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-small is-primary" type="text" name="isbn10">
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>ISBN-13:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-small is-primary" type="text" name="isbn13">
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Seitenanzahl:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-small is-primary" type="text" name="page_count">
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Bewertung:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-small is-primary" type="text" name="rating">
+                    </div>
+                </div>
+                <div class="columns is-mobile is-pulled-right my-3">
+                    <div class="column">
+                        <input class="button is-link" type="submit" value="Buch erstellen">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{{end}}

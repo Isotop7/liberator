@@ -32,7 +32,7 @@
                         <tbody>
                             {{range .ActiveBooks}}
                             <tr>
-                                <td><a href="/book/view?id={{.Model.ID}}">{{.Title}}</a></td>
+                                <td><a href="/book/view/{{.Model.ID}}">{{.Title}}</a></td>
                                 <td>{{.Author}}</td>
                                 <td>{{.Language}}</td>
                                 <td>{{.Category}}</td>
@@ -62,7 +62,7 @@
                         <tbody>
                             {{range .LatestBooks}}
                             <tr>
-                                <td><a href="/book/view?id={{.Model.ID}}">{{.Title}}</a></td>
+                                <td><a href="/book/view/{{.Model.ID}}">{{.Title}}</a></td>
                                 <td>{{.Author}}</td>
                                 <td>{{.Language}}</td>
                                 <td>{{.Category}}</td>

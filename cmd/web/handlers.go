@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/Isotop7/liberator/internal/models"
+	"github.com/julienschmidt/httprouter"
 )
 
 /*// List all Books
@@ -174,54 +175,10 @@ func deleteBookEndpoint(ctx *gin.Context) {
 }
 }*/
 
-func (liberator *liberator) bookCreate(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.Header().Set("Allow", http.MethodPost)
-		liberator.clientError(w, http.StatusMethodNotAllowed)
-		return
-	}
-
-	id, err := liberator.books.Insert("dnqd", "dojqwdk", "dqwdmkqd", "dqiqdmq", "1234567890", "1234567890123", 555)
-	if err != nil {
-		liberator.serverError(w, err)
-		return
-	}
-
-	liberator.infoLog.Printf("Created book with id %v", id)
-	http.Redirect(w, r, fmt.Sprintf("/book/view?id=%d", id), http.StatusSeeOther)
-}
-
-func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
-	if err != nil || id < 1 {
-		liberator.notFound(w)
-		return
-	}
-
-	book, err := liberator.books.Get(id)
-	if err != nil {
-		if errors.Is(err, models.ErrNoRecord) {
-			liberator.notFound(w)
-		} else {
-			liberator.serverError(w, err)
-		}
-		return
-	}
-
-	data := liberator.newTemplateData(r)
-	data.Book = book
-
-	liberator.render(w, http.StatusOK, "book.tmpl", data)
-}
-
 func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	if path == "/" {
 		http.Redirect(w, r, "/dashboard", http.StatusMovedPermanently)
-		return
-	} else if path == "/dashboard" {
-	} else {
-		liberator.notFound(w)
 		return
 	}
 
@@ -244,4 +201,45 @@ func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 	data.SumPageCount = sumPageCount
 
 	liberator.render(w, http.StatusOK, "dashboard.tmpl", data)
+}
+
+func (liberator *liberator) bookCreate(w http.ResponseWriter, r *http.Request) {
+	data := liberator.newTemplateData(r)
+
+	liberator.render(w, http.StatusOK, "bookCreate.tmpl", data)
+}
+
+func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Request) {
+	id, err := liberator.books.Insert("dnqd", "dojqwdk", "dqwdmkqd", "dqiqdmq", "1234567890", "1234567890123", 555)
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/book/view/%d", id), http.StatusSeeOther)
+}
+
+func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
+	params := httprouter.ParamsFromContext(r.Context())
+
+	id, err := strconv.Atoi(params.ByName("id"))
+	if err != nil || id < 1 {
+		liberator.notFound(w)
+		return
+	}
+
+	book, err := liberator.books.Get(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			liberator.notFound(w)
+		} else {
+			liberator.serverError(w, err)
+		}
+		return
+	}
+
+	data := liberator.newTemplateData(r)
+	data.Book = book
+
+	liberator.render(w, http.StatusOK, "bookView.tmpl", data)
 }
