@@ -176,7 +176,6 @@ func deleteBookEndpoint(ctx *gin.Context) {
 
 func (liberator *liberator) bookCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		liberator.logRequest(r.Method, http.StatusMethodNotAllowed, r.URL.Path)
 		w.Header().Set("Allow", http.MethodPost)
 		liberator.clientError(w, http.StatusMethodNotAllowed)
 		return
@@ -188,13 +187,11 @@ func (liberator *liberator) bookCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	liberator.logRequest(r.Method, http.StatusOK, r.URL.Path)
 	liberator.infoLog.Printf("Created book with id %v", id)
 	http.Redirect(w, r, fmt.Sprintf("/book/view?id=%d", id), http.StatusSeeOther)
 }
 
 func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
-	liberator.logRequest(r.Method, http.StatusOK, (r.URL.Path + "?" + r.URL.RawQuery))
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
 		liberator.notFound(w)
@@ -220,13 +217,10 @@ func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
 func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	if path == "/" {
-		liberator.logRequest(r.Method, http.StatusMovedPermanently, path)
 		http.Redirect(w, r, "/dashboard", http.StatusMovedPermanently)
 		return
 	} else if path == "/dashboard" {
-		liberator.logRequest(r.Method, http.StatusOK, path)
 	} else {
-		liberator.logRequest(r.Method, http.StatusNotFound, path)
 		liberator.notFound(w)
 		return
 	}

@@ -23,15 +23,6 @@ func (liberator *liberator) notFound(w http.ResponseWriter) {
 	liberator.clientError(w, http.StatusNotFound)
 }
 
-func (liberator *liberator) logRequest(method string, code int, url string) {
-	liberator.infoLog.Printf(
-		"%s %v %s",
-		method,
-		code,
-		url,
-	)
-}
-
 func (liberator *liberator) render(w http.ResponseWriter, status int, page string, data *templateData) {
 	ts, ok := liberator.templateCache[page]
 	if !ok {

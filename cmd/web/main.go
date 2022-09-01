@@ -29,8 +29,8 @@ func main() {
 	portAddress := ":" + strconv.Itoa(*port)
 
 	// Setup loggers
-	infoLog := log.New(os.Stdout, "[INFO] ", log.Ldate|log.Ltime)
-	errorLog := log.New(os.Stdout, "[ERROR] ", log.Ldate|log.Ltime)
+	infoLog := log.New(os.Stdout, "[INFO]\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stdout, "[ERROR]\t", log.Ldate|log.Ltime)
 	infoLog.Printf("Starting liberator on port '%s'", portAddress)
 
 	// Setup template cache

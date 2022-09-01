@@ -2,7 +2,7 @@ package main
 
 import "net/http"
 
-func (liberator *liberator) routes() *http.ServeMux {
+func (liberator *liberator) routes() http.Handler {
 	// Setup mux
 	mux := http.NewServeMux()
 
@@ -18,5 +18,5 @@ func (liberator *liberator) routes() *http.ServeMux {
 	mux.HandleFunc("/book/create", liberator.bookCreate)
 	mux.HandleFunc("/book/view", liberator.bookView)
 
-	return mux
+	return liberator.logRequest(secureHeaders(mux))
 }
