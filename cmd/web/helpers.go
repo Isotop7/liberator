@@ -6,8 +6,6 @@ import (
 	"runtime/debug"
 )
 
-// The serverError helper writes an error message and stack trace to the errorLog,
-// then sends a generic 500 Internal Server Error response to the user.
 func (liberator *liberator) serverError(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	liberator.errorLog.Output(2, trace)
@@ -15,16 +13,10 @@ func (liberator *liberator) serverError(w http.ResponseWriter, err error) {
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
 
-// The clientError helper sends a specific status code and corresponding description
-// to the user. We'll use this later in the book to send responses like 400 "Bad
-// Request" when there's a problem with the request that the user sent.
 func (liberator *liberator) clientError(w http.ResponseWriter, status int) {
 	http.Error(w, http.StatusText(status), status)
 }
 
-// For consistency, we'll also implement a notFound helper. This is simply a
-// convenience wrapper around clientError which sends a 404 Not Found response to
-// the user.
 func (liberator *liberator) notFound(w http.ResponseWriter) {
 	liberator.clientError(w, http.StatusNotFound)
 }
@@ -36,4 +28,19 @@ func (liberator *liberator) logRequest(method string, code int, url string) {
 		code,
 		url,
 	)
+}
+
+func (liberator *liberator) render(w http.ResponseWriter, status int, page string, data *templateData) {
+	ts, ok := liberator.templateCache[page]
+	if !ok {
+		liberator.serverError(w, fmt.Errorf("The template '%s' does not exist", page))
+		return
+	}
+
+	w.WriteHeader(status)
+
+	err := ts.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		liberator.serverError(w, err)
+	}
 }

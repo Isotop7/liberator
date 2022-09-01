@@ -3,8 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -176,73 +174,6 @@ func deleteBookEndpoint(ctx *gin.Context) {
 }
 }*/
 
-func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
-	if path == "/" {
-		liberator.logRequest(r.Method, http.StatusMovedPermanently, path)
-		http.Redirect(w, r, "/dashboard", http.StatusMovedPermanently)
-		return
-	} else if path == "/dashboard" {
-		liberator.logRequest(r.Method, http.StatusOK, path)
-	} else {
-		liberator.logRequest(r.Method, http.StatusNotFound, path)
-		liberator.notFound(w)
-		return
-	}
-
-	latestBooks, err := liberator.books.Latest(5)
-	if err != nil {
-		liberator.serverError(w, err)
-		return
-	}
-
-	for _, book := range latestBooks {
-		fmt.Fprintf(w, "%+v\n", book)
-	}
-
-	/*files := []string{
-		"./assets/templates/base.tmpl",
-		"./assets/templates/partials/nav.tmpl",
-		"./assets/templates/partials/footer.tmpl",
-		"./assets/templates/pages/dashboard.tmpl",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		liberator.errorLog.Print(err.Error())
-		liberator.serverError(w, err)
-		return
-	}
-
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		liberator.errorLog.Print(err.Error())
-		liberator.serverError(w, err)
-	}*/
-}
-
-func (liberator *liberator) book(w http.ResponseWriter, r *http.Request) {
-	files := []string{
-		"./assets/templates/base.tmpl",
-		"./assets/templates/partials/nav.tmpl",
-		"./assets/templates/partials/footer.tmpl",
-		"./assets/templates/pages/book.tmpl",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", 500)
-		return
-	}
-
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", 500)
-	}
-}
-
 func (liberator *liberator) bookCreate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		liberator.logRequest(r.Method, http.StatusMethodNotAllowed, r.URL.Path)
@@ -280,35 +211,32 @@ func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "%+v", book)
+	liberator.render(w, http.StatusOK, "book.tmpl", &templateData{
+		Book: book,
+	})
+}
 
-	/*files := []string{
-		"./assets/templates/base.tmpl",
-		"./assets/templates/partials/nav.tmpl",
-		"./assets/templates/partials/footer.tmpl",
-		"./assets/templates/pages/book.tmpl",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", 500)
+func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	if path == "/" {
+		liberator.logRequest(r.Method, http.StatusMovedPermanently, path)
+		http.Redirect(w, r, "/dashboard", http.StatusMovedPermanently)
+		return
+	} else if path == "/dashboard" {
+		liberator.logRequest(r.Method, http.StatusOK, path)
+	} else {
+		liberator.logRequest(r.Method, http.StatusNotFound, path)
+		liberator.notFound(w)
 		return
 	}
 
-	err = ts.ExecuteTemplate(w, "base", nil)
+	latestBooks, err := liberator.books.Latest(5)
 	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", 500)
-	}*/
-}
+		liberator.serverError(w, err)
+		return
+	}
 
-/*
-func showBook(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "showBook.tmpl", gin.H{
-		"Book": Book{
-			Title:  "Test",
-			Author: "Joanne K. Rowling",
-		},
+	liberator.render(w, http.StatusOK, "dashboard.tmpl", &templateData{
+		LatestBooks: latestBooks,
 	})
-}*/
+}

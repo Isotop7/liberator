@@ -15,7 +15,6 @@ func (liberator *liberator) routes() *http.ServeMux {
 	mux.HandleFunc("/dashboard", liberator.dashboard)
 
 	// Books
-	mux.HandleFunc("/book", liberator.book)
 	mux.HandleFunc("/book/create", liberator.bookCreate)
 	mux.HandleFunc("/book/view", liberator.bookView)
 
