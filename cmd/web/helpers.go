@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"runtime/debug"
@@ -37,10 +38,17 @@ func (liberator *liberator) render(w http.ResponseWriter, status int, page strin
 		return
 	}
 
-	w.WriteHeader(status)
+	// Write parsed template to temporary buffer
+	buf := new(bytes.Buffer)
 
-	err := ts.ExecuteTemplate(w, "base", data)
+	// Check for errors
+	err := ts.ExecuteTemplate(buf, "base", data)
 	if err != nil {
 		liberator.serverError(w, err)
+		return
 	}
+
+	// On success, set header and serve template
+	w.WriteHeader(status)
+	buf.WriteTo(w)
 }
