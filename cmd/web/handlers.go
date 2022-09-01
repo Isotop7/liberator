@@ -174,25 +174,6 @@ func deleteBookEndpoint(ctx *gin.Context) {
 		})
 	}
 }
-
-func getActiveBooks() []Book {
-	var books = []Book{}
-	err := DB.Limit(5).Find(&books)
-	if err != nil {
-		return books
-	} else {
-		return nil
-	}
-}
-
-func getLatestBooks() []Book {
-	var books = []Book{}
-	err := DB.Order("created_at desc").Limit(5).Find(&books)
-	if err != nil {
-		return books
-	} else {
-		return nil
-	}
 }*/
 
 func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
@@ -209,7 +190,17 @@ func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
+	latestBooks, err := liberator.books.Latest(5)
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	for _, book := range latestBooks {
+		fmt.Fprintf(w, "%+v\n", book)
+	}
+
+	/*files := []string{
 		"./assets/templates/base.tmpl",
 		"./assets/templates/partials/nav.tmpl",
 		"./assets/templates/partials/footer.tmpl",
@@ -227,14 +218,7 @@ func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		liberator.errorLog.Print(err.Error())
 		liberator.serverError(w, err)
-	}
-
-	/*ctx.HTML(http.StatusOK, "dashboard.tmpl", gin.H{
-		"readPages":   "readPages",
-		"username":    "username",
-		"activeBooks": getActiveBooks(),
-		"latestBooks": getLatestBooks(),
-	})*/
+	}*/
 }
 
 func (liberator *liberator) book(w http.ResponseWriter, r *http.Request) {

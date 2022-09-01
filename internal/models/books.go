@@ -54,5 +54,13 @@ func (b *BookModel) Get(id int) (*Book, error) {
 
 // This will return the 10 most recently created snippets.
 func (b *BookModel) Latest(limit int) ([]*Book, error) {
-	return nil, nil
+	var books = []*Book{}
+
+	result := b.DB.Limit(limit).Order("created_at desc").Find(&books)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return books, nil
 }
