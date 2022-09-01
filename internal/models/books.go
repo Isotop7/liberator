@@ -1,6 +1,10 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import (
+	"errors"
+
+	"github.com/jinzhu/gorm"
+)
 
 // Book
 type Book struct {
@@ -35,7 +39,16 @@ func (b *BookModel) Insert(title string, author string, language string, categor
 
 func (b *BookModel) Get(id int) (*Book, error) {
 	var book = &Book{}
-	b.DB.First(&book, id)
+	result := b.DB.First(&book, id)
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, ErrNoRecord
+		} else {
+			return nil, result.Error
+		}
+	}
+
 	return book, nil
 }
 

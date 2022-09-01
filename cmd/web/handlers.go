@@ -1,11 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/Isotop7/liberator/internal/models"
 )
 
 /*// List all Books
@@ -283,7 +286,19 @@ func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
+	book, err := liberator.books.Get(id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			liberator.notFound(w)
+		} else {
+			liberator.serverError(w, err)
+		}
+		return
+	}
+
+	fmt.Fprintf(w, "%+v", book)
+
+	/*files := []string{
 		"./assets/templates/base.tmpl",
 		"./assets/templates/partials/nav.tmpl",
 		"./assets/templates/partials/footer.tmpl",
@@ -301,7 +316,7 @@ func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", 500)
-	}
+	}*/
 }
 
 /*
