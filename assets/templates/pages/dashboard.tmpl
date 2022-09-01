@@ -4,9 +4,11 @@
     <p class="title">
       Hallo, Hendrik!
     </p>
+    {{if .SumPageCount}}
     <p class="subtitle">
-      Du hast bislang ??? Seiten gelesen.
+        Du hast bislang {{.SumPageCount}} Seiten gelesen.
     </p>
+    {{end}}
   </div>
 </section>
 
@@ -64,7 +66,7 @@
                                 <td>{{.Author}}</td>
                                 <td>{{.Language}}</td>
                                 <td>{{.Category}}</td>
-                                <td>{{.Model.CreatedAt.Format "02.01.2006 15:04"}}</td>
+                                <td>{{.Model.CreatedAt | humanDate}}</td>
                             </tr>
                             {{end}}
                         </tbody>

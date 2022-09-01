@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -21,6 +22,22 @@ type Book struct {
 
 type BookModel struct {
 	DB *gorm.DB
+}
+
+type Result struct {
+	Date  time.Time
+	Value int
+}
+
+func (b *BookModel) SumPageCount() (int, error) {
+	//TODO: We need to check for user assigned books and progress
+	result := Result{Value: 0}
+	b.DB.Table("books").Select("sum(page_count) as value").Scan(&result)
+	if result.Value > 0 {
+		return result.Value, nil
+	} else {
+		return result.Value, ErrSumPageCount
+	}
 }
 
 func (b *BookModel) Insert(title string, author string, language string, category string, isbn10 string, isbn13 string, pagecount int) (int, error) {

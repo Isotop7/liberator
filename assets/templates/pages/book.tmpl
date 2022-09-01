@@ -57,11 +57,11 @@
                     </tr>
                     <tr>
                         <th>Erstellt am:</th>
-                        <td>{{.Book.Model.CreatedAt}}</td>
+                        <td>{{.Book.Model.CreatedAt | humanDate}}</td>
                     </tr>
                     <tr>
                         <th>Aktualisiert am:</th>
-                        <td>{{.Book.Model.UpdatedAt}}</td>
+                        <td>{{.Book.Model.UpdatedAt | humanDate}}</td>
                     </tr>
                 </tbody>
                 </table>

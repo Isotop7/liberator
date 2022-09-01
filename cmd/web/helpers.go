@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
+	"time"
 )
 
 func (liberator *liberator) serverError(w http.ResponseWriter, err error) {
@@ -51,4 +52,10 @@ func (liberator *liberator) render(w http.ResponseWriter, status int, page strin
 	// On success, set header and serve template
 	w.WriteHeader(status)
 	buf.WriteTo(w)
+}
+
+func (liberator *liberator) newTemplateData(r *http.Request) *templateData {
+	return &templateData{
+		CurrentYear: time.Now().Year(),
+	}
 }

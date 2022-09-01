@@ -211,9 +211,10 @@ func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	liberator.render(w, http.StatusOK, "book.tmpl", &templateData{
-		Book: book,
-	})
+	data := liberator.newTemplateData(r)
+	data.Book = book
+
+	liberator.render(w, http.StatusOK, "book.tmpl", data)
 }
 
 func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
@@ -230,13 +231,23 @@ func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Query latest books
 	latestBooks, err := liberator.books.Latest(5)
 	if err != nil {
 		liberator.serverError(w, err)
 		return
 	}
 
-	liberator.render(w, http.StatusOK, "dashboard.tmpl", &templateData{
-		LatestBooks: latestBooks,
-	})
+	// Get sum page count
+	sumPageCount, err := liberator.books.SumPageCount()
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	data := liberator.newTemplateData(r)
+	data.LatestBooks = latestBooks
+	data.SumPageCount = sumPageCount
+
+	liberator.render(w, http.StatusOK, "dashboard.tmpl", data)
 }
