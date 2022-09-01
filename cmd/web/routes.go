@@ -18,5 +18,5 @@ func (liberator *liberator) routes() http.Handler {
 	mux.HandleFunc("/book/create", liberator.bookCreate)
 	mux.HandleFunc("/book/view", liberator.bookView)
 
-	return liberator.logRequest(secureHeaders(mux))
+	return liberator.recoverPanic(liberator.logRequest(secureHeaders(mux)))
 }
