@@ -7,173 +7,22 @@ import (
 	"strconv"
 
 	"github.com/Isotop7/liberator/internal/models"
+	"github.com/Isotop7/liberator/internal/validator"
 	"github.com/julienschmidt/httprouter"
 )
 
-/*// List all Books
-func listBooksEndpoint(ctx *gin.Context) {
-	var books = []Book{}
-	err := DB.Find(&books)
-	if err != nil {
-		ctx.JSON(http.StatusOK, books)
-	} else {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "error getting list of books",
-		})
-	}
+type bookCreateForm struct {
+	Title     string
+	Author    string
+	Language  string
+	Category  string
+	ISBN10    string
+	ISBN13    string
+	Pagecount int
+	Rating    int
+	Review    string
+	validator.Validator
 }
-
-// List single book
-func listBookEndpoint(ctx *gin.Context) {
-	// Get parameter from request
-	idParam := ctx.Param("id")
-
-	// Parse id to int
-	id, err := strconv.Atoi(idParam)
-	// If no int
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "book not found",
-		})
-		return
-	}
-	// If negative value
-	if id <= 0 {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "book not found",
-		})
-		return
-	}
-
-	// Create and find book
-	var book = Book{}
-	dbErr := DB.Where("id = ?", id).First(&book)
-
-	// If book was found
-	if dbErr != nil && book.ID > 0 {
-		ctx.JSON(http.StatusOK, book)
-		return
-	} else {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "book not found",
-		})
-		return
-	}
-}
-
-// Create single book
-func createBookEndpoint(ctx *gin.Context) {
-	var newElement Book
-
-	// Bind body data to element
-	err := ctx.BindJSON(&newElement)
-	if err != nil {
-		switch err.(type) {
-		case *json.UnmarshalTypeError:
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": "Invalid request",
-			})
-		}
-		return
-	}
-
-	// Check if element with id is already present in db and fail
-	var duplicateBook Book
-	_ = DB.Where("id = ?", newElement.ID).First(&duplicateBook)
-	if duplicateBook.ID == newElement.ID {
-		ctx.JSON(http.StatusConflict, gin.H{
-			"message": "duplicate element with id",
-			"data":    newElement,
-		})
-		return
-	} else {
-		// Create element in db
-		DB.Create(&newElement)
-		ctx.JSON(http.StatusCreated, newElement)
-	}
-}
-
-// Update single book
-func updateBookEndpoint(ctx *gin.Context) {
-	// Get parameter from request
-	idParam := ctx.Param("id")
-
-	// Parse id to int
-	id, err := strconv.Atoi(idParam)
-	// If no int
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "book not found",
-		})
-		return
-	}
-	// If negative value
-	if id <= 0 {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "book not found",
-		})
-		return
-	}
-
-	// Create and find book
-	var book = Book{}
-	dbErr := DB.Where("id = ?", id).First(&book)
-
-	// If book was found
-	if dbErr != nil && book.ID > 0 {
-		bindErr := ctx.BindJSON(&book)
-		if bindErr != nil {
-			ctx.JSON(http.StatusMethodNotAllowed, gin.H{
-				"message": bindErr.Error(),
-			})
-			return
-		}
-		DB.Save(&book)
-		ctx.JSON(http.StatusOK, book)
-		return
-	} else {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "book not found",
-		})
-		return
-	}
-}
-
-func deleteBookEndpoint(ctx *gin.Context) {
-	// Get parameter from request
-	idParam := ctx.Param("id")
-
-	// Parse id to int
-	id, err := strconv.Atoi(idParam)
-	// If no int
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "book not found",
-		})
-		return
-	}
-	// If negative value
-	if id <= 0 {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "book not found",
-		})
-		return
-	}
-
-	// Create and find book
-	var book = Book{}
-	dbErr := DB.Where("id = ?", id).Delete(&book)
-	if dbErr != nil {
-		ctx.JSON(http.StatusAccepted, gin.H{
-			"message": "book with id '" + idParam + "' deleted",
-		})
-	} else {
-		ctx.JSON(http.StatusMethodNotAllowed, gin.H{
-			"message": dbErr,
-		})
-	}
-}
-}*/
 
 func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
@@ -202,6 +51,8 @@ func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 func (liberator *liberator) bookCreate(w http.ResponseWriter, r *http.Request) {
 	data := liberator.newTemplateData(r)
 
+	data.Form = bookCreateForm{}
+
 	liberator.render(w, http.StatusOK, "bookCreate.tmpl", data)
 }
 
@@ -211,34 +62,70 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 		liberator.clientError(w, http.StatusBadRequest)
 	}
 
-	title := r.PostForm.Get("title")
-	author := r.PostForm.Get("author")
-	language := r.PostForm.Get("language")
-	category := r.PostForm.Get("category")
-	isbn10 := r.PostForm.Get("isbn10")
-	isbn13 := r.PostForm.Get("isbn13")
-	review := r.PostForm.Get("review")
-
+	// Convert pagecount
 	pagecount, err := strconv.Atoi(r.PostForm.Get("pagecount"))
 	if err != nil {
 		liberator.clientError(w, http.StatusBadRequest)
 	}
-	// Check for invalid page count
-	if pagecount < 1 {
-		liberator.clientError(w, http.StatusBadRequest)
-	}
 
+	// Convert rating
 	rating, err := strconv.Atoi(r.PostForm.Get("rating"))
 	if err != nil {
 		liberator.clientError(w, http.StatusBadRequest)
 	}
+
+	// Init struct form
+	form := bookCreateForm{
+		Title:     r.PostForm.Get("title"),
+		Author:    r.PostForm.Get("author"),
+		Language:  r.PostForm.Get("language"),
+		Category:  r.PostForm.Get("category"),
+		ISBN10:    r.PostForm.Get("isbn10"), //TODO: Add format check
+		ISBN13:    r.PostForm.Get("isbn13"), //TODO: Add checksum method
+		Pagecount: pagecount,
+		Rating:    rating,
+		Review:    r.PostForm.Get("review"),
+	}
+
+	// Validate title
+	form.CheckValue(validator.NotBlank(form.Title), "title", validator.ValueMustNotBeEmpty)
+	form.CheckValue(validator.MaxChars(form.Title, 255), "title", "Der Titel darf nicht mehr als 255 Zeichen lang sein")
+
+	// Validate author
+	form.CheckValue(validator.NotBlank(form.Author), "author", validator.ValueMustNotBeEmpty)
+	form.CheckValue(validator.MaxChars(form.Author, 255), "author", validator.ValueMustNotBeLongerThan(255))
+
+	// Validate category
+	form.CheckValue(validator.NotBlank(form.Category), "category", validator.ValueMustNotBeEmpty)
+	form.CheckValue(validator.MaxChars(form.Category, 255), "category", validator.ValueMustNotBeLongerThan(255))
+
+	// Check for invalid page count
+	form.CheckValue(validator.GreaterThan(form.Pagecount, 0), "pagecount", validator.ValueMustBeGreaterThan(0))
+
 	// Check for invalid rating
-	if rating < 1 || rating > 10 {
-		liberator.clientError(w, http.StatusBadRequest)
+	form.CheckValue(validator.InBounds(form.Pagecount, 1, 10), "rating", validator.ValueMustBeInRange(1, 10))
+
+	// If errors are found, show them and redirect to form
+	if !form.Valid() {
+		data := liberator.newTemplateData(r)
+		data.Form = form
+		liberator.render(w, http.StatusUnprocessableEntity, "bookCreate.tmpl", data)
+		return
 	}
 
 	// Insert element to database
-	id, err := liberator.books.Insert(title, author, language, category, isbn10, isbn13, pagecount, rating, review)
+	id, err := liberator.books.Insert(
+		form.Title,
+		form.Author,
+		form.Language,
+		form.Category,
+		form.ISBN10,
+		form.ISBN13,
+		form.Pagecount,
+		form.Rating,
+		form.Review)
+
+	// If error while inserting
 	if err != nil {
 		liberator.serverError(w, err)
 		return

@@ -15,6 +15,7 @@ type templateData struct {
 	LatestBooks  []*models.Book
 	ActiveBooks  []*models.Book
 	SumPageCount int
+	Form         any
 }
 
 func humanDate(t time.Time) string {
