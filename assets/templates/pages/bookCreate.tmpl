@@ -9,7 +9,7 @@
                         <label>Titel:</label>
                     </div>
                     <div class="level-right column">
-                        <input class="input is-small is-primary" type="text" name="title">
+                        <input class="input is-primary" type="text" name="title">
                     </div>
                 </div>
                 <div class="level columns">
@@ -17,7 +17,7 @@
                         <label>Autor:</label>
                     </div>
                     <div class="level-right column">
-                        <input class="input is-small is-primary" type="text" name="author">
+                        <input class="input is-primary" type="text" name="author">
                     </div>
                 </div>
                 <div class="level columns">
@@ -38,23 +38,24 @@
                         <label>Kategorie:</label>
                     </div>
                     <div class="level-right column">
-                        <input class="input is-small is-primary" type="text" name="category">
+                        <input class="input is-primary" type="text" name="category">
                     </div>
                 </div>
                 <div class="level columns">
                     <div class="level-left column">
-                        <label>ISBN-10:</label>
+                        <label>Bewertung (1=schlecht, 10=gut):</label>
                     </div>
                     <div class="level-right column">
-                        <input class="input is-small is-primary" type="text" name="isbn10">
+                        <input id="sliderWithValue" class="slider has-output is-medium is-fullwidth" name="rating" min="1" max="10" value="5" step="1" type="range">
+                        <output class="is-5" for="sliderWithValue">5</output>
                     </div>
                 </div>
                 <div class="level columns">
                     <div class="level-left column">
-                        <label>ISBN-13:</label>
+                        <label>Bewertung (Volltext):</label>
                     </div>
                     <div class="level-right column">
-                        <input class="input is-small is-primary" type="text" name="isbn13">
+                        <textarea class="textarea is-primary" name="review" placeholder="..."></textarea>
                     </div>
                 </div>
                 <div class="level columns">
@@ -62,15 +63,23 @@
                         <label>Seitenanzahl:</label>
                     </div>
                     <div class="level-right column">
-                        <input class="input is-small is-primary" type="text" name="page_count">
+                        <input class="input is-primary" type="text" name="pagecount">
                     </div>
                 </div>
                 <div class="level columns">
                     <div class="level-left column">
-                        <label>Bewertung:</label>
+                        <label>ISBN-10:</label>
                     </div>
                     <div class="level-right column">
-                        <input class="input is-small is-primary" type="text" name="rating">
+                        <input class="input is-primary" type="text" name="isbn10">
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>ISBN-13:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-primary" type="text" name="isbn13">
                     </div>
                 </div>
                 <div class="columns is-mobile is-pulled-right my-3">

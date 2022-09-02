@@ -6,11 +6,14 @@
                 <section class="hero is-medium is-primary">
                     <div class="hero-body">
                         <p class="title">
-                        "{{.Book.Title}}"
+                        {{.Book.Title}}
                         </p>
                         <p class="subtitle">
                         von {{.Book.Author}}
                         </p>
+                        {{if .Book.Review}}
+                        <p>"{{.Book.Review}}"</p>
+                        {{end}}
                     </div>
                 </section>
             </div>
@@ -40,20 +43,20 @@
                         <td>{{.Book.Category}}</td>
                     </tr>
                     <tr>
-                        <th>ISBN-10:</th>
-                        <td>{{.Book.ISBN10}}</td>
-                    </tr>
-                    <tr>
-                        <th>ISBN-13:</th>
-                        <td>{{.Book.ISBN13}}</td>
+                        <th>Bewertung:</th>
+                        <td>{{.Book.Rating}}</td>
                     </tr>
                     <tr>
                         <th>Seitenanzahl:</th>
                         <td>{{.Book.PageCount}}</td>
                     </tr>
                     <tr>
-                        <th>Bewertung:</th>
-                        <td>{{.Book.Rating}}</td>
+                        <th>ISBN-10:</th>
+                        <td>{{.Book.ISBN10}}</td>
+                    </tr>
+                    <tr>
+                        <th>ISBN-13:</th>
+                        <td>{{.Book.ISBN13}}</td>
                     </tr>
                     <tr>
                         <th>Erstellt am:</th>

@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -18,6 +17,7 @@ type Book struct {
 	ISBN13    string `json:"isbn13" binding:"len=13"`
 	PageCount int    `json:"page_count"`
 	Rating    int    `json:"rating"`
+	Review    string `json:"review" gorm:"size:2048"`
 }
 
 type BookModel struct {
@@ -25,22 +25,17 @@ type BookModel struct {
 }
 
 type Result struct {
-	Date  time.Time
 	Value int
 }
 
-func (b *BookModel) SumPageCount() (int, error) {
+func (b *BookModel) SumPageCount() int {
 	//TODO: We need to check for user assigned books and progress
-	result := Result{Value: 0}
+	result := Result{}
 	b.DB.Table("books").Select("sum(page_count) as value").Scan(&result)
-	if result.Value > 0 {
-		return result.Value, nil
-	} else {
-		return result.Value, ErrSumPageCount
-	}
+	return result.Value
 }
 
-func (b *BookModel) Insert(title string, author string, language string, category string, isbn10 string, isbn13 string, pagecount int) (int, error) {
+func (b *BookModel) Insert(title string, author string, language string, category string, isbn10 string, isbn13 string, pagecount int, rating int, review string) (int, error) {
 	book := Book{
 		Title:     title,
 		Author:    author,
@@ -49,6 +44,8 @@ func (b *BookModel) Insert(title string, author string, language string, categor
 		ISBN10:    isbn10,
 		ISBN13:    isbn13,
 		PageCount: pagecount,
+		Rating:    rating,
+		Review:    review,
 	}
 	result := b.DB.Create(&book)
 	return int(book.ID), result.Error

@@ -37,10 +37,10 @@
                                 <td>{{.Language}}</td>
                                 <td>{{.Category}}</td>
                             </tr>
+                            {{end}}
                         </tbody>
                     </table>
                 </p>
-                {{end}}
                 {{else}}
                     <p>Keine aktiven Bücher gefunden!</p>
                 {{end}}
@@ -50,6 +50,7 @@
                     Neue Bücher:
                 </p>
                 <br>
+                {{if .LatestBooks}}
                 <p>
                     <table class="table">
                         <thead>
@@ -72,6 +73,9 @@
                         </tbody>
                     </table>
                 </p>
+                {{else}}
+                    <p>Keine Bücher gefunden!</p>
+                {{end}}
             </div>
         </div>
     </div>

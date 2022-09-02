@@ -190,11 +190,7 @@ func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get sum page count
-	sumPageCount, err := liberator.books.SumPageCount()
-	if err != nil {
-		liberator.serverError(w, err)
-		return
-	}
+	sumPageCount := liberator.books.SumPageCount()
 
 	data := liberator.newTemplateData(r)
 	data.LatestBooks = latestBooks
@@ -210,12 +206,45 @@ func (liberator *liberator) bookCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Request) {
-	id, err := liberator.books.Insert("dnqd", "dojqwdk", "dqwdmkqd", "dqiqdmq", "1234567890", "1234567890123", 555)
+	err := r.ParseForm()
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	title := r.PostForm.Get("title")
+	author := r.PostForm.Get("author")
+	language := r.PostForm.Get("language")
+	category := r.PostForm.Get("category")
+	isbn10 := r.PostForm.Get("isbn10")
+	isbn13 := r.PostForm.Get("isbn13")
+	review := r.PostForm.Get("review")
+
+	pagecount, err := strconv.Atoi(r.PostForm.Get("pagecount"))
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+	// Check for invalid page count
+	if pagecount < 1 {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	rating, err := strconv.Atoi(r.PostForm.Get("rating"))
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+	// Check for invalid rating
+	if rating < 1 || rating > 10 {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	// Insert element to database
+	id, err := liberator.books.Insert(title, author, language, category, isbn10, isbn13, pagecount, rating, review)
 	if err != nil {
 		liberator.serverError(w, err)
 		return
 	}
 
+	// Redirect to view
 	http.Redirect(w, r, fmt.Sprintf("/book/view/%d", id), http.StatusSeeOther)
 }
 
