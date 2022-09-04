@@ -1,0 +1,40 @@
+{{define "main"}}
+<section class="section">
+  <div class="container">
+    <h1 class="title">Suchergebnisse:</h1>
+    {{if .Books}}
+    {{ range.Books }}
+    <div class="box">
+      <div class="columns">
+        <div class="column">
+          <p class="title is-4">
+            <a href="/book/view/{{.Model.ID}}"> "{{.Title}}" </a>
+          </p>
+          <p class="subtitle is-5">von {{.Author}}</p>
+          {{if .Review}}
+          <p>Rezension: "{{.Review}}"</p>
+          {{ end }}
+        </div>
+        <div class="column">
+          <div>
+            <p>Genre: {{.Category}}</p>
+            <p>Geschrieben in {{.Language}}</p>
+            <p>Bewertung: 
+                <span class="{{if gt .Rating 7}}has-text-success{{else if gt .Rating 3}}has-text-warning{{else}}has-text-danger{{end}}">
+                    {{.Rating}} von 10
+                </span>
+            </p>
+            <p><time datetime="2016-1-1">Erstellungsdatum: {{.Model.CreatedAt | humanDate}}</time></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{ end }}
+    {{else}}
+    <div class="container">
+      <h2 class="subtitle">Keine Bücher gefunden!</h2>
+    </div>
+    {{ end }}
+  </div>
+</section>
+{{ end }}

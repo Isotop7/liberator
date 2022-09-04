@@ -48,6 +48,31 @@ func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 	liberator.render(w, http.StatusOK, "dashboard.tmpl", data)
 }
 
+func (liberator *liberator) searchView(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	query := r.PostForm.Get("query")
+
+	if query == "" {
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		return
+	}
+
+	books, err := liberator.books.Search(query)
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	data := liberator.newTemplateData(r)
+	data.Books = books
+
+	liberator.render(w, http.StatusOK, "search.tmpl", data)
+}
+
 func (liberator *liberator) bookCreate(w http.ResponseWriter, r *http.Request) {
 	data := liberator.newTemplateData(r)
 
@@ -89,7 +114,7 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 
 	// Validate title
 	form.CheckValue(validator.NotBlank(form.Title), "title", validator.ValueMustNotBeEmpty)
-	form.CheckValue(validator.MaxChars(form.Title, 255), "title", "Der Titel darf nicht mehr als 255 Zeichen lang sein")
+	form.CheckValue(validator.MaxChars(form.Title, 255), "title", validator.ValueMustNotBeLongerThan(255))
 
 	// Validate author
 	form.CheckValue(validator.NotBlank(form.Author), "author", validator.ValueMustNotBeEmpty)
@@ -103,7 +128,7 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 	form.CheckValue(validator.GreaterThan(form.Pagecount, 0), "pagecount", validator.ValueMustBeGreaterThan(0))
 
 	// Check for invalid rating
-	form.CheckValue(validator.InBounds(form.Pagecount, 1, 10), "rating", validator.ValueMustBeInRange(1, 10))
+	form.CheckValue(validator.InBounds(form.Rating, 1, 10), "rating", validator.ValueMustBeInRange(1, 10))
 
 	// If errors are found, show them and redirect to form
 	if !form.Valid() {

@@ -78,3 +78,16 @@ func (b *BookModel) Latest(limit int) ([]*Book, error) {
 
 	return books, nil
 }
+
+func (b *BookModel) Search(query string) ([]*Book, error) {
+	var books = []*Book{}
+
+	query = "%" + query + "%"
+	result := b.DB.Where("title like ?", query).Or("author like ?", query).Find(&books)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return books, nil
+}

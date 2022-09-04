@@ -1,52 +1,32 @@
 {{define "nav"}}
 <nav class="navbar is-fixed-top is-info" role="navigation" aria-label="main navigation">
   <div class="container is-widescreen">
-    <div class="navbar-brand mx-6">
-      <a class="navbar-item mr-4" href="/">
-          <img src="/static/icons/storytelling.png" alt="liberator" width="48" height="48">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/static/icons/storytelling.png" alt="liberator" width="48" height="48">
       </a>
-      <hr class="navbar-divider ml-4">
-      <a href="/dashboard" class="navbar-item">
-        Dashboard
-      </a>
-      <a href="/book/create" class="navbar-item">
-        Buch erstellen
+  
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
       </a>
     </div>
-
-    <div class="navbar-menu">
+  
+    <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start">
-        
-
-          <!--<div class="navbar-dropdown">
-            <a class="navbar-item">
-              About
-            </a>
-            <a class="navbar-item">
-              Jobs
-            </a>
-            <a class="navbar-item">
-              Contact
-            </a>
-            <hr class="navbar-divider">
-            <a class="navbar-item">
-              Report an issue
-            </a>
-          </div>-->
+        <a href="/dashboard" class="navbar-item">
+          Dashboard
+        </a>
+        <a href="/book/create" class="navbar-item">
+          Buch erstellen
+        </a>
       </div>
-
-      <!--<div class="navbar-end">
+  
+      <div class="navbar-end">
         <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-primary">
-              <strong>Sign up</strong>
-            </a>
-            <a class="button is-light">
-              Log in
-            </a>
-          </div>
+          {{template "searchBar" .}}
         </div>
-      </div>-->
+      </div>      
     </div>
   </div>
 </nav>

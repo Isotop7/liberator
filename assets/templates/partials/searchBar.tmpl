@@ -1,0 +1,23 @@
+{{define "searchBar"}}
+<div class="container">
+  <form id="searchForm" action="/search" method="POST">
+    <div class="columns is-centered">
+      <div class="column">
+        <input
+          class="input is-rounded has-background-info has-text-white"
+          type="text"
+          placeholder="Suchen ..."
+          name="query"
+        />
+      </div>
+      <div class="column">
+        <input
+          class="button is-rounded is-link is-light is-left"
+          type="submit"
+          value=""
+        />
+      </div>
+    </div>
+  </form>
+</div>
+{{ end }}

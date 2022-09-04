@@ -26,6 +26,7 @@ func (liberator *liberator) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/book/view/:id", liberator.bookView)
 	router.HandlerFunc(http.MethodGet, "/book/create", liberator.bookCreate)
 	router.HandlerFunc(http.MethodPost, "/book/create", liberator.bookCreatePost)
+	router.HandlerFunc(http.MethodPost, "/search", liberator.searchView)
 
 	// Default middleware chain
 	defaultChain := alice.New(liberator.recoverPanic, liberator.logRequest, secureHeaders)
