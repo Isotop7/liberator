@@ -7879,3 +7879,15 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .footer {
   background-color: #f6ae2dff;
   padding: 3rem 1.5rem 6rem; }
+
+::-moz-placeholder {
+  color: white !important; }
+
+::-webkit-input-placeholder {
+  color: white !important; }
+
+:-moz-placeholder {
+  color: white !important; }
+
+:-ms-input-placeholder {
+  color: white !important; }
