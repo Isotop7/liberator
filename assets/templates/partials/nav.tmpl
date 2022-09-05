@@ -1,33 +1,52 @@
 {{define "nav"}}
-<nav class="navbar is-fixed-top is-info" role="navigation" aria-label="main navigation">
+<nav
+  class="navbar is-fixed-top is-info"
+  role="navigation"
+  aria-label="main navigation"
+>
   <div class="container is-widescreen">
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-        <img src="/static/icons/storytelling.png" alt="liberator" width="48" height="48">
+        <img
+          src="/static/icons/storytelling.png"
+          alt="liberator"
+          width="48"
+          height="48"
+        />
       </a>
-  
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+
+      <a
+        role="button"
+        class="navbar-burger"
+        aria-label="menu"
+        aria-expanded="false"
+        data-target="navbarBasicExample"
+      >
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
       </a>
     </div>
-  
+
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start">
-        <a href="/dashboard" class="navbar-item">
-          Dashboard
-        </a>
-        <a href="/book/create" class="navbar-item">
-          Buch erstellen
-        </a>
+        <a href="/dashboard" class="navbar-item"> Dashboard </a>
+        <a href="/book/create" class="navbar-item"> Buch erstellen </a>
       </div>
-  
+
       <div class="navbar-end">
         <div class="navbar-item">
           {{template "searchBar" .}}
         </div>
-      </div>      
+        <a href="/user/signup" class="navbar-item">Registrieren</a>
+        <a href="/user/login" class="navbar-item">Anmelden</a>
+        <a class="navbar-item logoutWrapper">
+          <form action="/user/logout" method="POST">
+            <button id="logoutButton">Abmelden</button>
+          </form>
+        </a>
+      </di
+      v>
     </div>
   </div>
 </nav>
-{{end}}
+{{ end }}

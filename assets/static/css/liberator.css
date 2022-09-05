@@ -7891,3 +7891,14 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 
 :-ms-input-placeholder {
   color: white !important; }
+
+#logoutButton {
+  background-color: inherit;
+  color: white;
+  line-height: 1.5;
+  font-size: 1em;
+  font-weight: 400;
+  border: none; }
+
+#logoutWrapper {
+  cursor: pointer; }

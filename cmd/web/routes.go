@@ -30,6 +30,11 @@ func (liberator *liberator) routes() http.Handler {
 	router.Handler(http.MethodGet, "/book/create", dynamic.ThenFunc(liberator.bookCreate))
 	router.Handler(http.MethodPost, "/book/create", dynamic.ThenFunc(liberator.bookCreatePost))
 	router.Handler(http.MethodPost, "/search", dynamic.ThenFunc(liberator.searchView))
+	router.Handler(http.MethodGet, "/user/signup", dynamic.ThenFunc(liberator.userSignup))
+	router.Handler(http.MethodPost, "/user/signup", dynamic.ThenFunc(liberator.userSignupPost))
+	router.Handler(http.MethodGet, "/user/login", dynamic.ThenFunc(liberator.userLogin))
+	router.Handler(http.MethodPost, "/user/login", dynamic.ThenFunc(liberator.userLoginPost))
+	router.Handler(http.MethodPost, "/user/logout", dynamic.ThenFunc(liberator.userLogoutPost))
 
 	// Default middleware chain
 	standard := alice.New(liberator.recoverPanic, liberator.logRequest, secureHeaders)

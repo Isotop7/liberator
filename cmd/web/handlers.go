@@ -191,3 +191,23 @@ func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
 
 	liberator.render(w, http.StatusOK, "bookView.tmpl", data)
 }
+
+func (liberator *liberator) userSignup(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "HTML form for signup")
+}
+
+func (liberator *liberator) userSignupPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "POST handler for signup")
+}
+
+func (liberator *liberator) userLogin(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "HTML login form")
+}
+
+func (liberator *liberator) userLoginPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "POST handler for login")
+}
+
+func (liberator *liberator) userLogoutPost(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "POST handler for logout")
+}
