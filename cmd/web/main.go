@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"html/template"
 	"log"
@@ -57,6 +58,7 @@ func main() {
 	sessionManager.Store = sqlite3store.New(db.DB())
 	sessionManager.Lifetime = 12 * time.Hour
 	sessionManager.IdleTimeout = 60 * time.Minute
+	sessionManager.Cookie.Secure = true
 
 	// Setup shared struct
 	liberator := &liberator{
@@ -67,13 +69,32 @@ func main() {
 		sessionManager: sessionManager,
 	}
 
+	// TLS config
+	tlsConfig := &tls.Config{
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+		CipherSuites: []uint16{
+			tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
+			tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+		},
+		MinVersion: tls.VersionTLS12,
+		MaxVersion: tls.VersionTLS13,
+	}
+
 	// Server struct
 	srv := &http.Server{
-		Addr:     portAddress,
-		ErrorLog: errorLog,
-		Handler:  liberator.routes(),
+		Addr:         portAddress,
+		ErrorLog:     errorLog,
+		Handler:      liberator.routes(),
+		TLSConfig:    tlsConfig,
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  7 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
 	// Serve liberator
-	errorLog.Fatal(srv.ListenAndServe())
+	errorLog.Fatal(srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem"))
 }
