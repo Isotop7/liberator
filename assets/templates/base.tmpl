@@ -10,6 +10,15 @@
 </head>
 <body class="has-navbar-fixed-top">
   {{template "nav" .}}
+  {{with .Flash}}
+  <div class="container section">
+    <div class="box has-background-success">
+      <p class="has-text-centered">
+        {{.}}
+      </p>
+    </div>
+  </div>
+  {{end}}
   {{template "main" .}}
   {{template "footer" .}}
 {{end}}

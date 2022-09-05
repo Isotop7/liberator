@@ -16,6 +16,7 @@ type templateData struct {
 	ActiveBooks  []*models.Book
 	SumPageCount int
 	Form         any
+	Flash        string
 }
 
 func humanDate(t time.Time) string {

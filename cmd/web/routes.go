@@ -20,16 +20,19 @@ func (liberator *liberator) routes() http.Handler {
 	fileServer := http.FileServer(http.Dir("./assets/static/"))
 	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
 
+	// Session agnostic handler
+	dynamic := alice.New(liberator.sessionManager.LoadAndSave)
+
 	// Serve handlers
-	router.HandlerFunc(http.MethodGet, "/", liberator.dashboard)
-	router.HandlerFunc(http.MethodGet, "/dashboard", liberator.dashboard)
-	router.HandlerFunc(http.MethodGet, "/book/view/:id", liberator.bookView)
-	router.HandlerFunc(http.MethodGet, "/book/create", liberator.bookCreate)
-	router.HandlerFunc(http.MethodPost, "/book/create", liberator.bookCreatePost)
-	router.HandlerFunc(http.MethodPost, "/search", liberator.searchView)
+	router.Handler(http.MethodGet, "/", dynamic.ThenFunc(liberator.dashboard))
+	router.Handler(http.MethodGet, "/dashboard", dynamic.ThenFunc(liberator.dashboard))
+	router.Handler(http.MethodGet, "/book/view/:id", dynamic.ThenFunc(liberator.bookView))
+	router.Handler(http.MethodGet, "/book/create", dynamic.ThenFunc(liberator.bookCreate))
+	router.Handler(http.MethodPost, "/book/create", dynamic.ThenFunc(liberator.bookCreatePost))
+	router.Handler(http.MethodPost, "/search", dynamic.ThenFunc(liberator.searchView))
 
 	// Default middleware chain
-	defaultChain := alice.New(liberator.recoverPanic, liberator.logRequest, secureHeaders)
+	standard := alice.New(liberator.recoverPanic, liberator.logRequest, secureHeaders)
 
-	return defaultChain.Then(router)
+	return standard.Then(router)
 }

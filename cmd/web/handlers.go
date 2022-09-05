@@ -156,20 +156,27 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// Save success message to session data
+	liberator.sessionManager.Put(r.Context(), "flash", "Buch wurde erfolgreich erstellt!")
+
 	// Redirect to view
 	http.Redirect(w, r, fmt.Sprintf("/book/view/%d", id), http.StatusSeeOther)
 }
 
 func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
+	// Parse parameters
 	params := httprouter.ParamsFromContext(r.Context())
 
+	// Convert ID from request
 	id, err := strconv.Atoi(params.ByName("id"))
 	if err != nil || id < 1 {
 		liberator.notFound(w)
 		return
 	}
 
+	// Query book by id
 	book, err := liberator.books.Get(id)
+	// Check for errors
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
 			liberator.notFound(w)

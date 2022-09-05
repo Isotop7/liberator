@@ -36,6 +36,14 @@ audit:
 css/generate:
 	npm run css-build
 
+# ==================================================================================== #
+# CSS
+# ==================================================================================== #
+
 .PHONY: db/createSessionsTable
 db/createSessionsTable:
 	sqlite3 liberator.db "drop index sessions_expiry_idx" "drop table sessions" "CREATE TABLE sessions (token TEXT PRIMARY KEY,data BLOB NOT NULL,expiry REAL NOT NULL);" "CREATE INDEX sessions_expiry_idx ON sessions(expiry);" ".exit"
+
+.PHONY: db/clearSessions
+db/clearSessions:
+	sqlite3 liberator.db "DELETE FROM sessions;" ".exit"
