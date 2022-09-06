@@ -1,0 +1,72 @@
+{{define "main"}}
+<section class="section">
+  <div class="columns is-mobile">
+    <div class="column centered box is-4 is-offset-4 p-5">
+      <form action="/user/signup" method="POST" novalidate>
+        <div class="level columns">
+          <div class="level-left column is-3">
+            <label>Name:</label>
+          </div>
+          <div class="level-right column is-9">
+            <input
+              class="input is-rounded is-primary"
+              type="text"
+              name="name"
+              value="{{.Form.Name}}"
+            />
+            {{ with.Form.ValueErrors.name }}
+            <div>
+              <span class="tag is-warning">{{.}}</span>
+            </div>
+            {{ end }}
+          </div>
+        </div>
+        <div class="level columns">
+          <div class="level-left column is-3">
+            <label>Email:</label>
+          </div>
+          <div class="level-right column is-9">
+            <input
+              class="input is-rounded is-primary"
+              type="email"
+              name="email"
+              value="{{.Form.Email}}"
+            />
+            {{ with.Form.ValueErrors.email }}
+            <div>
+              <span class="tag is-warning">{{.}}</span>
+            </div>
+            {{ end }}
+          </div>
+        </div>
+        <div class="level columns">
+          <div class="level-left column is-3">
+            <label>Passwort:</label>
+          </div>
+          <div class="level-right column is-9">
+            <input
+              class="input is-rounded is-primary"
+              type="password"
+              name="password"
+            />
+            {{ with.Form.ValueErrors.password }}
+            <div>
+              <span class="tag is-warning">{{.}}</span>
+            </div>
+            {{ end }}
+          </div>
+        </div>
+        <div class="columns is-mobile is-pulled-right my-3">
+          <div class="column">
+            <input
+              class="button is-rounded is-link is-light"
+              type="submit"
+              value="Registrieren"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{{ end }}

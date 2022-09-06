@@ -22,6 +22,7 @@ type liberator struct {
 	errorLog       *log.Logger
 	infoLog        *log.Logger
 	books          *models.BookModel
+	users          *models.UserModel
 	templateCache  map[string]*template.Template
 	sessionManager *scs.SessionManager
 }
@@ -45,6 +46,7 @@ func main() {
 		errorLog.Fatal(err)
 	}
 	db.AutoMigrate(&models.Book{})
+	db.AutoMigrate(&models.User{})
 	defer db.Close()
 
 	// Setup template cache
@@ -65,6 +67,7 @@ func main() {
 		infoLog:        infoLog,
 		errorLog:       errorLog,
 		books:          &models.BookModel{DB: db},
+		users:          &models.UserModel{DB: db},
 		templateCache:  templateCache,
 		sessionManager: sessionManager,
 	}

@@ -24,6 +24,13 @@ type bookCreateForm struct {
 	validator.Validator
 }
 
+type userSignupForm struct {
+	Name     string
+	Email    string
+	Password string
+	validator.Validator
+}
+
 func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	if path == "/" {
@@ -193,7 +200,9 @@ func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (liberator *liberator) userSignup(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "HTML form for signup")
+	data := liberator.newTemplateData(r)
+	data.Form = userSignupForm{}
+	liberator.render(w, http.StatusOK, "signup.tmpl", data)
 }
 
 func (liberator *liberator) userSignupPost(w http.ResponseWriter, r *http.Request) {
