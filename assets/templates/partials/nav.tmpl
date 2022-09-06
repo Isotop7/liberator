@@ -37,11 +37,24 @@
         <div class="navbar-item">
           {{template "searchBar" .}}
         </div>
-        <a href="/user/signup" class="navbar-item">Registrieren</a>
-        <a href="/user/login" class="navbar-item">Anmelden</a>
-        <a class="navbar-item logoutWrapper">
+          <a class="navbar-item container has-text-centered" href="/user/signup">
+            <div>
+              <img class="navbar-button" src="/static/icons/person-add-outline.svg" alt="Registrieren">
+              <div class="image-sub">Registrieren</div>
+            </div>
+          </a>
+        <a class="navbar-item container has-text-centered" href="/user/login">
+          <div>
+            <img class="navbar-button" src="/static/icons/log-in-outline.svg" alt="Login">
+            <div class="image-sub">Login</div>
+          </div>
+        </a>
+        <a class="navbar-item container has-text-centered logoutWrapper">
           <form action="/user/logout" method="POST">
-            <button id="logoutButton">Abmelden</button>
+            <button id="logoutButton">
+              <img class="navbar-button" src="/static/icons/log-out-outline.svg" alt="Login">
+            </button>
+            <div class="image-sub">Logout</div>
           </form>
         </a>
       </di

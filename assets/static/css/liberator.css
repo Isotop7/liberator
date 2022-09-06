@@ -7902,3 +7902,14 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 
 #logoutWrapper {
   cursor: pointer; }
+
+#searchButton {
+  background: url(/static/icons/search-outline.svg) no-repeat;
+  background-position: center; }
+
+.navbar-button {
+  width: 1.5em;
+  height: 1.5em; }
+
+.image-sub {
+  font-size: 0.8em; }
