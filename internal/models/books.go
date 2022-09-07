@@ -29,7 +29,6 @@ type Result struct {
 }
 
 func (b *BookModel) SumPageCount() int {
-	//TODO: We need to check for user assigned books and progress
 	result := Result{}
 	b.DB.Table("books").Select("sum(page_count) as value").Scan(&result)
 	return result.Value

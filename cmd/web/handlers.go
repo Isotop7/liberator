@@ -112,8 +112,8 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 		Author:    r.PostForm.Get("author"),
 		Language:  r.PostForm.Get("language"),
 		Category:  r.PostForm.Get("category"),
-		ISBN10:    r.PostForm.Get("isbn10"), //TODO: Add format check
-		ISBN13:    r.PostForm.Get("isbn13"), //TODO: Add checksum method
+		ISBN10:    r.PostForm.Get("isbn10"),
+		ISBN13:    r.PostForm.Get("isbn13"),
 		Pagecount: pagecount,
 		Rating:    rating,
 		Review:    r.PostForm.Get("review"),
