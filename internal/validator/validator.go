@@ -2,33 +2,42 @@ package validator
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"unicode/utf8"
 )
 
+var EmailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+
 var ValueMustNotBeEmpty = "Dieses Feld darf nicht leer sein"
+var ValueInvalidEmail = "Das Format der eingegebenen Email wird nicht erkannt"
 
 type Validator struct {
-	ValueErrors map[string]string
+	NonFieldErrors []string
+	FieldErrors    map[string]string
 }
 
 func (v *Validator) Valid() bool {
-	return len(v.ValueErrors) == 0
+	return len(v.FieldErrors) == 0 && len(v.NonFieldErrors) == 0
 }
 
-func (v *Validator) AddValueError(key, message string) {
-	if v.ValueErrors == nil {
-		v.ValueErrors = make(map[string]string)
+func (v *Validator) AddFieldError(key, message string) {
+	if v.FieldErrors == nil {
+		v.FieldErrors = make(map[string]string)
 	}
 
-	if _, exists := v.ValueErrors[key]; !exists {
-		v.ValueErrors[key] = message
+	if _, exists := v.FieldErrors[key]; !exists {
+		v.FieldErrors[key] = message
 	}
 }
 
-func (v *Validator) CheckValue(ok bool, key, message string) {
+func (v *Validator) AddNonFieldError(message string) {
+	v.NonFieldErrors = append(v.NonFieldErrors, message)
+}
+
+func (v *Validator) CheckField(ok bool, key, message string) {
 	if !ok {
-		v.AddValueError(key, message)
+		v.AddFieldError(key, message)
 	}
 }
 
@@ -38,6 +47,14 @@ func NotBlank(value string) bool {
 
 func MaxChars(value string, n int) bool {
 	return utf8.RuneCountInString(value) <= n
+}
+
+func MinChars(value string, n int) bool {
+	return utf8.RuneCountInString(value) >= n
+}
+
+func Matches(value string, regex *regexp.Regexp) bool {
+	return regex.MatchString(value)
 }
 
 func PermittedInt(value int, permittedValues ...int) bool {
@@ -59,6 +76,11 @@ func InBounds(value int, lbound int, ubound int) bool {
 
 func ValueMustNotBeLongerThan(n int) string {
 	str := fmt.Sprintf("Der Titel darf nicht mehr als %d Zeichen lang sein", n)
+	return str
+}
+
+func ValueMustBeLongerThan(n int) string {
+	str := fmt.Sprintf("Der Wert muss mehr als %d Zeichen lang sein", n)
 	return str
 }
 

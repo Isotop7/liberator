@@ -31,6 +31,12 @@ type userSignupForm struct {
 	validator.Validator
 }
 
+type userLoginForm struct {
+	Email    string
+	Password string
+	validator.Validator
+}
+
 func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	if path == "/" {
@@ -120,22 +126,22 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Validate title
-	form.CheckValue(validator.NotBlank(form.Title), "title", validator.ValueMustNotBeEmpty)
-	form.CheckValue(validator.MaxChars(form.Title, 255), "title", validator.ValueMustNotBeLongerThan(255))
+	form.CheckField(validator.NotBlank(form.Title), "title", validator.ValueMustNotBeEmpty)
+	form.CheckField(validator.MaxChars(form.Title, 255), "title", validator.ValueMustNotBeLongerThan(255))
 
 	// Validate author
-	form.CheckValue(validator.NotBlank(form.Author), "author", validator.ValueMustNotBeEmpty)
-	form.CheckValue(validator.MaxChars(form.Author, 255), "author", validator.ValueMustNotBeLongerThan(255))
+	form.CheckField(validator.NotBlank(form.Author), "author", validator.ValueMustNotBeEmpty)
+	form.CheckField(validator.MaxChars(form.Author, 255), "author", validator.ValueMustNotBeLongerThan(255))
 
 	// Validate category
-	form.CheckValue(validator.NotBlank(form.Category), "category", validator.ValueMustNotBeEmpty)
-	form.CheckValue(validator.MaxChars(form.Category, 255), "category", validator.ValueMustNotBeLongerThan(255))
+	form.CheckField(validator.NotBlank(form.Category), "category", validator.ValueMustNotBeEmpty)
+	form.CheckField(validator.MaxChars(form.Category, 255), "category", validator.ValueMustNotBeLongerThan(255))
 
 	// Check for invalid page count
-	form.CheckValue(validator.GreaterThan(form.Pagecount, 0), "pagecount", validator.ValueMustBeGreaterThan(0))
+	form.CheckField(validator.GreaterThan(form.Pagecount, 0), "pagecount", validator.ValueMustBeGreaterThan(0))
 
 	// Check for invalid rating
-	form.CheckValue(validator.InBounds(form.Rating, 1, 10), "rating", validator.ValueMustBeInRange(1, 10))
+	form.CheckField(validator.InBounds(form.Rating, 1, 10), "rating", validator.ValueMustBeInRange(1, 10))
 
 	// If errors are found, show them and redirect to form
 	if !form.Valid() {
@@ -206,15 +212,100 @@ func (liberator *liberator) userSignup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (liberator *liberator) userSignupPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "POST handler for signup")
+	err := r.ParseForm()
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	form := userSignupForm{
+		Name:     r.PostForm.Get("name"),
+		Email:    r.PostForm.Get("email"),
+		Password: r.PostForm.Get("password"),
+	}
+
+	form.CheckField(validator.NotBlank(form.Name), "name", validator.ValueMustNotBeEmpty)
+	form.CheckField(validator.NotBlank(form.Email), "email", validator.ValueMustNotBeEmpty)
+	form.CheckField(validator.Matches(form.Email, validator.EmailRegex), "email", validator.ValueInvalidEmail)
+	form.CheckField(validator.NotBlank(form.Password), "password", validator.ValueMustNotBeEmpty)
+	form.CheckField(validator.MinChars(form.Password, 8), "password", validator.ValueMustBeLongerThan(8))
+
+	if !form.Valid() {
+		data := liberator.newTemplateData(r)
+		data.Form = form
+		liberator.render(w, http.StatusUnprocessableEntity, "signup.tmpl", data)
+		return
+	}
+
+	err = liberator.users.Insert(form.Name, form.Email, form.Password)
+	if err != nil {
+		if errors.Is(err, models.ErrDuplicateEmail) {
+			form.AddFieldError("email", "Die Email-Adresse wird bereits verwendet")
+
+			data := liberator.newTemplateData(r)
+			data.Form = form
+			liberator.render(w, http.StatusUnprocessableEntity, "signup.tmpl", data)
+		} else {
+			liberator.serverError(w, err)
+		}
+		return
+	}
+
+	liberator.sessionManager.Put(r.Context(), "flash", "Die Registrierung war erfolgreich. Du kannst dich nun anmelden.")
+
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
 func (liberator *liberator) userLogin(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "HTML login form")
+	data := liberator.newTemplateData(r)
+	data.Form = userLoginForm{}
+	liberator.render(w, http.StatusOK, "login.tmpl", data)
 }
 
 func (liberator *liberator) userLoginPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "POST handler for login")
+	err := r.ParseForm()
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	form := userLoginForm{
+		Email:    r.PostForm.Get("email"),
+		Password: r.PostForm.Get("password"),
+	}
+
+	form.CheckField(validator.NotBlank(form.Email), "email", validator.ValueMustNotBeEmpty)
+	form.CheckField(validator.Matches(form.Email, validator.EmailRegex), "email", validator.ValueInvalidEmail)
+	form.CheckField(validator.NotBlank(form.Password), "password", validator.ValueMustNotBeEmpty)
+
+	if !form.Valid() {
+		data := liberator.newTemplateData(r)
+		data.Form = form
+		liberator.render(w, http.StatusUnprocessableEntity, "login.tmpl", data)
+		return
+	}
+
+	id, err := liberator.users.Authenticate(form.Email, form.Password)
+	if err != nil {
+		if errors.Is(err, models.ErrInvalidCredentials) {
+			form.AddNonFieldError("Email oder Passwort nicht korrekt")
+
+			data := liberator.newTemplateData(r)
+			data.Form = form
+			liberator.render(w, http.StatusUnprocessableEntity, "login.tmpl", data)
+		} else {
+			liberator.serverError(w, err)
+		}
+		return
+	}
+
+	err = liberator.sessionManager.RenewToken(r.Context())
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	liberator.sessionManager.Put(r.Context(), "authenticatedUserID", id)
+
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
 func (liberator *liberator) userLogoutPost(w http.ResponseWriter, r *http.Request) {

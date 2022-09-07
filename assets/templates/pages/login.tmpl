@@ -2,25 +2,14 @@
 <section class="section">
   <div class="columns is-mobile">
     <div class="column centered box is-three-fifths is-offset-one-fifth p-5">
-      <form action="/user/signup" method="POST" novalidate>
-        <div class="level columns">
-          <div class="level-left column is-3">
-            <label>Name:</label>
-          </div>
-          <div class="level-right column is-9">
-            <input
-              class="input is-rounded is-primary"
-              type="text"
-              name="name"
-              value="{{.Form.Name}}"
-            />
-            {{ with.Form.FieldErrors.name }}
-            <div>
-              <span class="tag is-warning">{{.}}</span>
-            </div>
-            {{ end }}
+      <form action="/user/login" method="POST" novalidate>
+        {{ range.Form.NonFieldErrors }}
+        <div class="columns notification is-danger is-mobile my-5 mx-2">
+          <div class="column has-text-centered">
+            <p>{{.}}</p>
           </div>
         </div>
+        {{ end }}
         <div class="level columns">
           <div class="level-left column is-3">
             <label>Email:</label>
@@ -57,11 +46,13 @@
           </div>
         </div>
         <div class="columns is-mobile my-1">
-          <div class="column is-one-third is-offset-one-third has-text-centered">
+          <div
+            class="column is-one-third is-offset-one-third has-text-centered"
+          >
             <input
               class="button is-rounded is-link is-light"
               type="submit"
-              value="Registrieren"
+              value="Anmelden"
             />
           </div>
         </div>

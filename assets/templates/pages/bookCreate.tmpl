@@ -1,7 +1,7 @@
 {{define "main"}}
 <section class="section">
     <div class="columns is-mobile">
-        <div class="column box is-half is-offset-one-quarter p-5">
+        <div class="column box is-three-fifths is-offset-one-fifth p-5">
             <p class="is-size-4 my-4">Neues Buch erstellen:</p>
             <form action="/book/create" method="POST">
                 <div class="level columns">
@@ -10,7 +10,7 @@
                     </div>
                     <div class="level-right column">
                         <input class="input is-rounded is-primary" type="text" name="title" value="{{.Form.Title}}">
-                        {{with .Form.ValueErrors.title}}
+                        {{with .Form.FieldErrors.title}}
                         <div>
                             <span class="tag is-warning">{{.}}</span>
                         </div>
@@ -23,7 +23,7 @@
                     </div>
                     <div class="level-right column">
                         <input class="input is-rounded is-primary" type="text" name="author" value="{{.Form.Author}}">
-                        {{with .Form.ValueErrors.author}}
+                        {{with .Form.FieldErrors.author}}
                         <div>
                             <span class="tag is-warning">{{.}}</span>
                         </div>
@@ -49,7 +49,7 @@
                     </div>
                     <div class="level-right column">
                         <input class="input is-rounded is-primary" type="text" name="category" value="{{.Form.Category}}">
-                        {{with .Form.ValueErrors.category}}
+                        {{with .Form.FieldErrors.category}}
                         <div>
                             <span class="tag is-warning">{{.}}</span>
                         </div>
@@ -85,7 +85,7 @@
                     </div>
                     <div class="level-right column">
                         <input class="input is-rounded is-primary" type="text" name="pagecount" value="{{if .Form.Pagecount}}{{.Form.Pagecount}}{{else}}1{{end}}">
-                        {{with .Form.ValueErrors.pagecount}}
+                        {{with .Form.FieldErrors.pagecount}}
                         <div>
                             <span class="tag is-warning">{{.}}</span>
                         </div>
