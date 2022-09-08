@@ -11,13 +11,13 @@
 <body class="has-navbar-fixed-top">
   {{template "nav" .}}
   {{with .Flash}}
-  <div class="container section">
+  <section class="hero has-background-info section">
     <div class="box has-background-success">
       <p class="has-text-centered">
         {{.}}
       </p>
     </div>
-  </div>
+  </section>
   {{end}}
   {{template "main" .}}
   {{template "footer" .}}

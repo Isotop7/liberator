@@ -309,5 +309,13 @@ func (liberator *liberator) userLoginPost(w http.ResponseWriter, r *http.Request
 }
 
 func (liberator *liberator) userLogoutPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "POST handler for logout")
+	err := liberator.sessionManager.RenewToken(r.Context())
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	liberator.sessionManager.Remove(r.Context(), "authenticatedUserID")
+	liberator.sessionManager.Put(r.Context(), "flash", "Du wurdest abgemeldet!")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
