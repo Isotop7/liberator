@@ -43,10 +43,8 @@ func (u *UserModel) Insert(name, email, password string) error {
 }
 
 func (u *UserModel) Authenticate(email, password string) (int, error) {
-	user := User{
-		Email: email,
-	}
-	result := u.DB.First(&user)
+	user := User{}
+	result := u.DB.Where(&User{Email: email}).First(&user)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
