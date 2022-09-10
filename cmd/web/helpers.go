@@ -47,7 +47,12 @@ func (liberator *liberator) render(w http.ResponseWriter, status int, page strin
 
 func (liberator *liberator) newTemplateData(r *http.Request) *templateData {
 	return &templateData{
-		CurrentYear: time.Now().Year(),
-		Flash:       liberator.sessionManager.PopString(r.Context(), "flash"),
+		CurrentYear:     time.Now().Year(),
+		Flash:           liberator.sessionManager.PopString(r.Context(), "flash"),
+		IsAuthenticated: liberator.isAuthenticated(r),
 	}
+}
+
+func (liberator *liberator) isAuthenticated(r *http.Request) bool {
+	return liberator.sessionManager.Exists(r.Context(), "authenticatedUserID")
 }

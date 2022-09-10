@@ -1,12 +1,18 @@
 {{ define "main" }}
 <section class="hero has-background-info">
     <div class="hero-body container has-text-centered is-widescreen">
+        {{if .IsAuthenticated}}
         <p class="title">
             Hallo, Hendrik!
         </p>
         {{if .SumPageCount}}
         <p class="subtitle">
             Du hast bislang {{.SumPageCount}} Seiten gelesen.
+        </p>
+        {{end}}
+        {{else}}
+        <p class="title">
+            liberator
         </p>
         {{end}}
     </div>
@@ -24,6 +30,7 @@
     <div class="container is-widescreen">
         <div class="columns">
             <div class="column is-half">
+                {{if .IsAuthenticated}}
                 <p class="is-size-4">
                     Aktive Bücher:
                 </p>
@@ -51,6 +58,14 @@
                 </p>
                 {{else}}
                     <p>Keine aktiven Bücher gefunden!</p>
+                {{end}}
+                {{else}}
+                <p class="is-size-4">
+                    Nach der Anmeldung findest du hier deine aktiven Bücher!
+                </p>
+                <p>
+                    ...
+                </p>
                 {{end}}
             </div>
             <div class="column is-half">

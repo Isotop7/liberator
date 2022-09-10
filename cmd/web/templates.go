@@ -9,14 +9,15 @@ import (
 )
 
 type templateData struct {
-	CurrentYear  int
-	Book         *models.Book
-	Books        []*models.Book
-	LatestBooks  []*models.Book
-	ActiveBooks  []*models.Book
-	SumPageCount int
-	Form         any
-	Flash        string
+	CurrentYear     int
+	Book            *models.Book
+	Books           []*models.Book
+	LatestBooks     []*models.Book
+	ActiveBooks     []*models.Book
+	SumPageCount    int
+	Form            any
+	Flash           string
+	IsAuthenticated bool
 }
 
 func humanDate(t time.Time) string {
