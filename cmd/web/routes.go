@@ -21,20 +21,22 @@ func (liberator *liberator) routes() http.Handler {
 	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
 
 	// Session agnostic handler
-	dynamic := alice.New(liberator.sessionManager.LoadAndSave)
+	publicCalls := alice.New(liberator.sessionManager.LoadAndSave)
 
 	// Serve handlers
-	router.Handler(http.MethodGet, "/", dynamic.ThenFunc(liberator.dashboard))
-	router.Handler(http.MethodGet, "/dashboard", dynamic.ThenFunc(liberator.dashboard))
-	router.Handler(http.MethodGet, "/book/view/:id", dynamic.ThenFunc(liberator.bookView))
-	router.Handler(http.MethodGet, "/book/create", dynamic.ThenFunc(liberator.bookCreate))
-	router.Handler(http.MethodPost, "/book/create", dynamic.ThenFunc(liberator.bookCreatePost))
-	router.Handler(http.MethodPost, "/search", dynamic.ThenFunc(liberator.searchView))
-	router.Handler(http.MethodGet, "/user/signup", dynamic.ThenFunc(liberator.userSignup))
-	router.Handler(http.MethodPost, "/user/signup", dynamic.ThenFunc(liberator.userSignupPost))
-	router.Handler(http.MethodGet, "/user/login", dynamic.ThenFunc(liberator.userLogin))
-	router.Handler(http.MethodPost, "/user/login", dynamic.ThenFunc(liberator.userLoginPost))
-	router.Handler(http.MethodPost, "/user/logout", dynamic.ThenFunc(liberator.userLogoutPost))
+	router.Handler(http.MethodGet, "/", publicCalls.ThenFunc(liberator.dashboard))
+	router.Handler(http.MethodGet, "/dashboard", publicCalls.ThenFunc(liberator.dashboard))
+	router.Handler(http.MethodGet, "/user/signup", publicCalls.ThenFunc(liberator.userSignup))
+	router.Handler(http.MethodPost, "/user/signup", publicCalls.ThenFunc(liberator.userSignupPost))
+	router.Handler(http.MethodGet, "/user/login", publicCalls.ThenFunc(liberator.userLogin))
+	router.Handler(http.MethodPost, "/user/login", publicCalls.ThenFunc(liberator.userLoginPost))
+
+	protectedCalls := publicCalls.Append(liberator.requireAuthentication)
+	router.Handler(http.MethodGet, "/book/view/:id", protectedCalls.ThenFunc(liberator.bookView))
+	router.Handler(http.MethodPost, "/search", protectedCalls.ThenFunc(liberator.searchView))
+	router.Handler(http.MethodGet, "/book/create", protectedCalls.ThenFunc(liberator.bookCreate))
+	router.Handler(http.MethodPost, "/book/create", protectedCalls.ThenFunc(liberator.bookCreatePost))
+	router.Handler(http.MethodPost, "/user/logout", protectedCalls.ThenFunc(liberator.userLogoutPost))
 
 	// Default middleware chain
 	standard := alice.New(liberator.recoverPanic, liberator.logRequest, secureHeaders)
