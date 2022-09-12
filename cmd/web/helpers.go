@@ -57,5 +57,10 @@ func (liberator *liberator) newTemplateData(r *http.Request) *templateData {
 }
 
 func (liberator *liberator) isAuthenticated(r *http.Request) bool {
-	return liberator.sessionManager.Exists(r.Context(), "authenticatedUserID")
+	isAuthenticated, ok := r.Context().Value(isAuthenticatedContextKey).(bool)
+	if !ok {
+		return false
+	}
+
+	return isAuthenticated
 }

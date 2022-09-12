@@ -67,5 +67,19 @@ func (u *UserModel) Authenticate(email, password string) (int, error) {
 }
 
 func (u *UserModel) Exists(id int) (bool, error) {
-	return false, nil
+	user := User{}
+	result := u.DB.First(&user, id)
+
+	if result.RowsAffected > 0 {
+		return true, nil
+	} else {
+		if result.Error != nil {
+			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				return false, nil
+			} else {
+				return false, result.Error
+			}
+		}
+		return false, nil
+	}
 }
