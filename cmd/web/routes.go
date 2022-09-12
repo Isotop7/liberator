@@ -21,7 +21,7 @@ func (liberator *liberator) routes() http.Handler {
 	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
 
 	// Session agnostic handler
-	publicCalls := alice.New(liberator.sessionManager.LoadAndSave)
+	publicCalls := alice.New(liberator.sessionManager.LoadAndSave, secureCSRF)
 
 	// Serve handlers
 	router.Handler(http.MethodGet, "/", publicCalls.ThenFunc(liberator.dashboard))

@@ -4,6 +4,7 @@
         <div class="column box is-three-fifths is-offset-one-fifth p-5">
             <p class="is-size-4 my-4">Neues Buch erstellen:</p>
             <form action="/book/create" method="POST">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                 <div class="level columns">
                     <div class="level-left column">
                         <label>Titel:</label>

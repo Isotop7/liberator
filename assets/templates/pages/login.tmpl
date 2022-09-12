@@ -3,6 +3,7 @@
   <div class="columns is-mobile">
     <div class="column centered box is-three-fifths is-offset-one-fifth p-5">
       <form action="/user/login" method="POST" novalidate>
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         {{ range.Form.NonFieldErrors }}
         <div class="columns notification is-danger is-mobile my-5 mx-2">
           <div class="column has-text-centered">

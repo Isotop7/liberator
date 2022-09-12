@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"runtime/debug"
 	"time"
+
+	"github.com/justinas/nosurf"
 )
 
 func (liberator *liberator) serverError(w http.ResponseWriter, err error) {
@@ -50,6 +52,7 @@ func (liberator *liberator) newTemplateData(r *http.Request) *templateData {
 		CurrentYear:     time.Now().Year(),
 		Flash:           liberator.sessionManager.PopString(r.Context(), "flash"),
 		IsAuthenticated: liberator.isAuthenticated(r),
+		CSRFToken:       nosurf.Token(r),
 	}
 }
 

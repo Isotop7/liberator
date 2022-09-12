@@ -3,6 +3,7 @@
   <div class="columns is-mobile">
     <div class="column centered box is-three-fifths is-offset-one-fifth p-5">
       <form action="/user/signup" method="POST" novalidate>
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <div class="level columns">
           <div class="level-left column is-3">
             <label>Name:</label>
