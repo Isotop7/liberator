@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/Isotop7/liberator/ui"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
 )
@@ -17,8 +18,8 @@ func (liberator *liberator) routes() http.Handler {
 	})
 
 	// Serve static files
-	fileServer := http.FileServer(http.Dir("./assets/static/"))
-	router.Handler(http.MethodGet, "/static/*filepath", http.StripPrefix("/static", fileServer))
+	fileServer := http.FileServer(http.FS(ui.Files))
+	router.Handler(http.MethodGet, "/static/*filepath", fileServer)
 
 	// Session agnostic handler
 	publicCalls := alice.New(liberator.sessionManager.LoadAndSave, secureCSRF, liberator.authenticate)
