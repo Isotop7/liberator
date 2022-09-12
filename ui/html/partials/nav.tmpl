@@ -1,0 +1,85 @@
+{{define "nav"}}
+<nav
+  class="navbar is-fixed-top"
+  role="navigation"
+  aria-label="main navigation"
+>
+  <div class="container is-widescreen">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img
+          src="/static/icons/storytelling.png"
+          alt="liberator"
+          width="48"
+          height="48"
+        />
+      </a>
+
+      <a
+        role="button"
+        class="navbar-burger"
+        aria-label="menu"
+        aria-expanded="false"
+        data-target="navbarBasicExample"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a href="/dashboard" class="navbar-item container has-text-centered">
+          <div>
+            <img class="navbar-button" src="/static/icons/home-outline.svg" alt="Login">
+            <div class="image-sub">Dashboard</div>
+          </div>
+        </a>
+        {{if .IsAuthenticated}}
+        <a href="/book/create" class="navbar-item container has-text-centered">
+          <div>
+            <img class="navbar-button" src="/static/icons/add-circle-outline.svg" alt="Login">
+            <div class="image-sub">Buch erstellen</div>
+          </div>
+        </a>
+        {{end}}
+      </div>
+
+      <div class="navbar-end">
+        {{if .IsAuthenticated}}
+        <div class="navbar-item">
+          {{template "searchBar" .}}
+        </div>
+        {{end}}
+          {{if not .IsAuthenticated}}
+          <a class="navbar-item container has-text-centered" href="/user/signup">
+            <div>
+              <img class="navbar-button" src="/static/icons/person-add-outline.svg" alt="Registrieren">
+              <div class="image-sub">Registrieren</div>
+            </div>
+          </a>
+          {{end}}
+        {{if not .IsAuthenticated}}
+        <a class="navbar-item container has-text-centered" href="/user/login">
+          <div>
+            <img class="navbar-button" src="/static/icons/log-in-outline.svg" alt="Login">
+            <div class="image-sub">Login</div>
+          </div>
+        </a>
+        {{end}}
+        {{if .IsAuthenticated}}
+        <a class="navbar-item container has-text-centered logoutWrapper">
+          <form action="/user/logout" method="POST">
+            <button id="logoutButton">
+              <img class="navbar-button" src="/static/icons/log-out-outline.svg" alt="Login">
+            </button>
+            <div class="image-sub">Logout</div>
+          </form>
+        </a>
+        {{end}}
+      </di
+      v>
+    </div>
+  </div>
+</nav>
+{{ end }}

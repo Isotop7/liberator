@@ -1,0 +1,64 @@
+{{define "main"}}
+<section class="section">
+  <div class="columns is-mobile">
+    <div class="column centered box is-three-fifths is-offset-one-fifth p-5">
+      <form action="/user/login" method="POST" novalidate>
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        {{ range.Form.NonFieldErrors }}
+        <div class="columns notification is-danger is-mobile my-5 mx-2">
+          <div class="column has-text-centered">
+            <p>{{.}}</p>
+          </div>
+        </div>
+        {{ end }}
+        <div class="level columns">
+          <div class="level-left column is-3">
+            <label>Email:</label>
+          </div>
+          <div class="level-right column is-9">
+            <input
+              class="input is-rounded is-primary"
+              type="email"
+              name="email"
+              value="{{.Form.Email}}"
+            />
+            {{ with.Form.FieldErrors.email }}
+            <div>
+              <span class="tag is-warning">{{.}}</span>
+            </div>
+            {{ end }}
+          </div>
+        </div>
+        <div class="level columns">
+          <div class="level-left column is-3">
+            <label>Passwort:</label>
+          </div>
+          <div class="level-right column is-9">
+            <input
+              class="input is-rounded is-primary"
+              type="password"
+              name="password"
+            />
+            {{ with.Form.FieldErrors.password }}
+            <div>
+              <span class="tag is-warning">{{.}}</span>
+            </div>
+            {{ end }}
+          </div>
+        </div>
+        <div class="columns is-mobile my-1">
+          <div
+            class="column is-one-third is-offset-one-third has-text-centered"
+          >
+            <input
+              class="button is-rounded is-link is-light"
+              type="submit"
+              value="Anmelden"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{{ end }}

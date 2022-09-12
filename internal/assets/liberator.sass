@@ -1,0 +1,85 @@
+@charset "utf-8";
+
+// Font
+@font-face 
+    font-family: "Lato Regular";
+    src: url("/static/fonts/Lato-Regular.woff2") format('woff');
+$family-sans-serif: "Lato Regular", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+
+// Custom colors
+$medium-turquoise: #55dde0ff;
+$ice: #88eef1ff;
+$queen-blue: #33658aff;
+$charcoal: #2f4858ff;
+$charcoaler: #20323dff;
+$charcoalest: #192830ff;
+$alternate-grey: #d5daddff;
+
+// Base colors    
+$primary: $medium-turquoise;
+$info: $charcoaler;
+$link: $queen-blue;
+$footer-background-color: $primary;
+$background: $charcoal;
+$body-background-color: $charcoal;
+$box-background-color: $charcoal;
+$scheme-main: $charcoal;
+$text: $alternate-grey;
+$text-strong: $alternate-grey;
+$light: $alternate-grey;
+$white: $alternate-grey;
+$border: $queen-blue;
+
+// Links
+$link: $ice;
+$link-hover: $medium-turquoise;
+$link-focus: $medium-turquoise;
+
+// Navbar
+$navbar-item-color: $alternate-grey;
+$navbar-background-color: $charcoaler;
+$navbar-item-hover-color: $alternate-grey;
+$navbar-item-hover-background-color: $charcoalest;
+$navbar-height: 4rem;
+$navbar-item-img-max-height: 3rem;
+
+@import "../../node_modules/bulma/bulma.sass";
+
+@include placeholder 
+    color: $alternate-grey !important;
+
+#logoutButton
+    background-color: inherit
+    color: $alternate-grey
+    line-height: 1.5
+    font-size: 1em
+    font-weight: 400
+    border: none
+
+#logoutWrapper
+    cursor: pointer
+
+#searchButton
+    background: url(/static/icons/search-outline.svg) no-repeat
+    background-position: center
+
+.navbar-button
+    width: 1.5em
+    height: 1.5em
+
+.image-sub
+    font-size: 0.8em
+
+.flash
+    color: #2f4858
+
+.fullheight
+    height: 100vh
+
+body 
+    display: flex
+    min-height: 100vh
+    flex-direction: column
+ 
+#content
+    flex: 1

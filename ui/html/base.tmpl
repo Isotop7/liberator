@@ -1,0 +1,30 @@
+{{define "base"}}
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>liberator</title>
+    <link rel="stylesheet" href="/static/css/liberator.css">
+    <link rel="stylesheet" href="/static/css/bulma-slider.min.css">
+  </head>
+  <body class="has-navbar-fixed-top">
+    <div id="content">
+      {{template "nav" .}}
+      {{with .Flash}}
+      <section class="hero has-background-info section">
+        <div class="box has-background-success">
+          <p class="has-text-centered flash">
+            {{.}}
+          </p>
+        </div>
+      </section>
+      {{end}}
+      {{template "main" .}}
+    </div>
+    {{template "footer" .}}
+  <script src="/static/js/bulma-slider.min.js"></script>
+  <script src="/static/js/liberator.js"></script>
+  </body>
+</html>
+{{end}}

@@ -1,0 +1,121 @@
+{{define "main"}}
+<section class="section">
+    <div class="columns is-mobile">
+        <div class="column box is-three-fifths is-offset-one-fifth p-5">
+            <p class="is-size-4 my-4">Neues Buch erstellen:</p>
+            <form action="/book/create" method="POST">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Titel:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-rounded is-primary" type="text" name="title" value="{{.Form.Title}}">
+                        {{with .Form.FieldErrors.title}}
+                        <div>
+                            <span class="tag is-warning">{{.}}</span>
+                        </div>
+                        {{end}}
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Autor:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-rounded is-primary" type="text" name="author" value="{{.Form.Author}}">
+                        {{with .Form.FieldErrors.author}}
+                        <div>
+                            <span class="tag is-warning">{{.}}</span>
+                        </div>
+                        {{end}}
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Sprache:</label>
+                    </div>
+                    <div class="level-right is-rounded column">
+                        <p>
+                            <input type="radio" name="language" value="Deutsch" checked>Deutsch
+                        </p>
+                        <p>
+                            <input type="radio" name="language" value="Englisch">Englisch
+                        </p>
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Kategorie:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-rounded is-primary" type="text" name="category" value="{{.Form.Category}}">
+                        {{with .Form.FieldErrors.category}}
+                        <div>
+                            <span class="tag is-warning">{{.}}</span>
+                        </div>
+                        {{end}}
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Bewertung (1=schlecht, 10=gut):</label>
+                    </div>
+                    <div class="level-right column">
+                        <input id="sliderWithValue" class="slider has-output is-circle is-medium is-fullwidth" name="rating" min="1" max="10" value="{{if .Form.Rating}}{{.Form.Rating}}{{else}}5{{end}}" step="1" type="range">
+                        <output class="has-text-black has-background-warning" for="sliderWithValue">
+                            {{if .Form.Rating}}
+                                {{.Form.Rating}}
+                            {{else}}
+                                5
+                            {{end}}
+                        </output>
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Bewertung (Volltext):</label>
+                    </div>
+                    <div class="level-right column">
+                        <textarea class="textarea is-primary" rows="5" name="review" placeholder="..."></textarea>
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>Seitenanzahl:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-rounded is-primary" type="text" name="pagecount" value="{{if .Form.Pagecount}}{{.Form.Pagecount}}{{else}}1{{end}}">
+                        {{with .Form.FieldErrors.pagecount}}
+                        <div>
+                            <span class="tag is-warning">{{.}}</span>
+                        </div>
+                        {{end}}
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>ISBN-10:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-rounded is-primary" type="text" name="isbn10">
+                    </div>
+                </div>
+                <div class="level columns">
+                    <div class="level-left column">
+                        <label>ISBN-13:</label>
+                    </div>
+                    <div class="level-right column">
+                        <input class="input is-rounded is-primary" type="text" name="isbn13">
+                    </div>
+                </div>
+                <div class="columns is-mobile is-pulled-right my-3">
+                    <div class="column">
+                        <input class="button is-rounded is-link is-light" type="submit" value="Buch erstellen">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{{end}}

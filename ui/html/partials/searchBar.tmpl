@@ -1,0 +1,25 @@
+{{define "searchBar"}}
+<div class="container">
+  <form id="searchForm" action="/search" method="POST">
+    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+    <div class="columns is-centered">
+      <div class="column">
+        <input
+          class="input is-rounded has-background-info has-text-white"
+          type="text"
+          placeholder="Suchen ..."
+          name="query"
+        />
+      </div>
+      <div class="column">
+        <input
+          class="button is-link is-light is-left"
+          id="searchButton"
+          type="submit"
+          value=""
+        >
+      </div>
+    </div>
+  </form>
+</div>
+{{ end }}

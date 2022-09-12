@@ -1,0 +1,106 @@
+{{ define "main" }}
+<section class="hero has-background-info">
+    <div class="hero-body container has-text-centered is-widescreen">
+        {{if .IsAuthenticated}}
+        <p class="title">
+            Hallo, Hendrik!
+        </p>
+        {{if .SumPageCount}}
+        <p class="subtitle">
+            Du hast bislang {{.SumPageCount}} Seiten gelesen.
+        </p>
+        {{end}}
+        {{else}}
+        <p class="title">
+            liberator
+        </p>
+        {{end}}
+    </div>
+</section>
+
+<!--
+<section class="hero has-background-info">
+    <div class="hero-body container has-text-centered is-widescreen">
+        {{template "searchBar" .}}
+    </div>
+</section>
+-->
+
+<section class="section">
+    <div class="container is-widescreen">
+        <div class="columns">
+            <div class="column is-half">
+                {{if .IsAuthenticated}}
+                <p class="is-size-4">
+                    Aktive Bücher:
+                </p>
+                <br>
+                {{if .ActiveBooks}}
+                <p>
+                    <table class="table">
+                        <thead>
+                            <th>Titel</th>
+                            <th>Autor</th>
+                            <th>Sprache</th>
+                            <th>Kategorie</th>
+                        </thead>
+                        <tbody>
+                            {{range .ActiveBooks}}
+                            <tr>
+                                <td><a href="/book/view/{{.Model.ID}}">{{.Title}}</a></td>
+                                <td>{{.Author}}</td>
+                                <td>{{.Language}}</td>
+                                <td>{{.Category}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </p>
+                {{else}}
+                    <p>Keine aktiven Bücher gefunden!</p>
+                {{end}}
+                {{else}}
+                <p class="is-size-4">
+                    Nach der Anmeldung findest du hier deine aktiven Bücher!
+                </p>
+                <p>
+                    ...
+                </p>
+                {{end}}
+            </div>
+            <div class="column is-half">
+                <p class="is-size-4">
+                    Neue Bücher:
+                </p>
+                <br>
+                {{if .LatestBooks}}
+                <p>
+                    <table class="table">
+                        <thead>
+                            <th>Titel</th>
+                            <th>Autor</th>
+                            <th>Sprache</th>
+                            <th>Kategorie</th>
+                            <th>Erstellt am</th>
+                        </thead>
+                        <tbody>
+                            {{range .LatestBooks}}
+                            <tr>
+                                <td><a href="/book/view/{{.Model.ID}}">{{.Title}}</a></td>
+                                <td>{{.Author}}</td>
+                                <td>{{.Language}}</td>
+                                <td>{{.Category}}</td>
+                                <td>{{.Model.CreatedAt | humanDate}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </p>
+                {{else}}
+                    <p>Keine Bücher gefunden!</p>
+                {{end}}
+            </div>
+        </div>
+    </div>
+</section>
+{{ end }}

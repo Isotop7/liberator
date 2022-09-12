@@ -1,0 +1,75 @@
+{{define "main"}}
+<section class="section">
+    <div class="centered container box p-6">
+        <div class="columns is-vcentered">
+            <div class="column">
+                <section class="hero is-medium is-primary">
+                    <div class="hero-body">
+                        <p class="title">
+                        {{.Book.Title}}
+                        </p>
+                        <p class="subtitle">
+                        von {{.Book.Author}}
+                        </p>
+                        {{if .Book.Review}}
+                        <p>"{{.Book.Review}}"</p>
+                        {{end}}
+                    </div>
+                </section>
+            </div>
+            <div class="column">
+                <table class="table">
+                <thead>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>ID:</th>
+                        <td>{{.Book.Model.ID}}</td>
+                    </tr>
+                    <tr>
+                        <th>Titel:</th>
+                        <td>{{.Book.Title}}</td>
+                    </tr>
+                    <tr>
+                        <th>Autor:</th>
+                        <td>{{.Book.Author}}</td>
+                    </tr>
+                    <tr>
+                        <th>Sprache:</th>
+                        <td>{{.Book.Language}}</td>
+                    </tr>
+                    <tr>
+                        <th>Kategorie:</th>
+                        <td>{{.Book.Category}}</td>
+                    </tr>
+                    <tr>
+                        <th>Bewertung:</th>
+                        <td>{{.Book.Rating}}</td>
+                    </tr>
+                    <tr>
+                        <th>Seitenanzahl:</th>
+                        <td>{{.Book.PageCount}}</td>
+                    </tr>
+                    <tr>
+                        <th>ISBN-10:</th>
+                        <td>{{.Book.ISBN10}}</td>
+                    </tr>
+                    <tr>
+                        <th>ISBN-13:</th>
+                        <td>{{.Book.ISBN13}}</td>
+                    </tr>
+                    <tr>
+                        <th>Erstellt am:</th>
+                        <td>{{.Book.Model.CreatedAt | humanDate}}</td>
+                    </tr>
+                    <tr>
+                        <th>Aktualisiert am:</th>
+                        <td>{{.Book.Model.UpdatedAt | humanDate}}</td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{{end}}

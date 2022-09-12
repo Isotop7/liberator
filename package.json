@@ -1,8 +1,14 @@
 {
-  "name": ".",
-  "private": true,
   "dependencies": {
-    "livebud": "0.2.3",
-    "svelte": "3.47.0"
+    "bulma": "^0.9.4"
+  },
+  "devDependencies": {
+    "bulma-slider": "^2.0.5",
+    "node-sass": "^7.0.1"
+  },
+  "scripts": {
+    "css-build": "node-sass --omit-source-map-url internal/assets/liberator.sass assets/static/css/liberator.css",
+    "css-watch": "npm run css-build -- --watch",
+    "start": "npm run css-watch"
   }
 }
