@@ -49,12 +49,12 @@ func (b *BookModel) SumPageCount() int {
 }
 
 func (b *BookModel) Insert(title string, author string, language string, category string, isbn10 string, isbn13 string, pagecount int, rating int, review string) (int, error) {
-	created_at := time.Now()
+	timestamp := time.Now()
 
 	result, err := b.DB.Exec(`
-			INSERT INTO books (created_at, title, author, language, category, isbn10, isbn13, page_count, rating, review)
+			INSERT INTO books (created_at, updated_at, title, author, language, category, isbn10, isbn13, page_count, rating, review)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, created_at, title, author, language, category, isbn10, isbn13, pagecount, rating, review)
+	`, timestamp, timestamp, title, author, language, category, isbn10, isbn13, pagecount, rating, review)
 
 	if err != nil {
 		return 0, err
@@ -70,13 +70,14 @@ func (b *BookModel) Get(id int) (*Book, error) {
 	book := &Book{}
 
 	row := b.DB.QueryRow(`
-		SELECT id, created_at, title, author, language, category, isbn10, isbn13, page_count, rating, review
+		SELECT id, created_at, updated_at, title, author, language, category, isbn10, isbn13, page_count, rating, review
 		FROM books
 		WHERE id = ?
 		`, id)
 	err := row.Scan(
 		&book.ID,
 		&book.CreatedAt,
+		&book.UpdatedAt,
 		&book.Title,
 		&book.Author,
 		&book.Language,
@@ -104,7 +105,7 @@ func (b *BookModel) Latest(limit int) ([]*Book, error) {
 	var books = []*Book{}
 
 	rows, err := b.DB.Query(`
-		SELECT id, created_at, title, author, language, category, isbn10, isbn13, page_count, rating, review
+		SELECT id, created_at, updated_at, title, author, language, category, isbn10, isbn13, page_count, rating, review
 		FROM books
 		ORDER BY created_at DESC
 		LIMIT ?
@@ -120,6 +121,7 @@ func (b *BookModel) Latest(limit int) ([]*Book, error) {
 		err := rows.Scan(
 			&book.ID,
 			&book.CreatedAt,
+			&book.UpdatedAt,
 			&book.Title,
 			&book.Author,
 			&book.Language,
@@ -143,7 +145,7 @@ func (b *BookModel) Search(query string) ([]*Book, error) {
 	var books = []*Book{}
 
 	rows, err := b.DB.Query(`
-		SELECT id, created_at, title, author, language, category, isbn10, isbn13, page_count, rating, review
+		SELECT id, created_at, updated_at, title, author, language, category, isbn10, isbn13, page_count, rating, review
 		FROM books
 		WHERE title like ? OR author like ?
 		`, "%"+query+"%", "%"+query+"%")
@@ -158,6 +160,7 @@ func (b *BookModel) Search(query string) ([]*Book, error) {
 		err := rows.Scan(
 			&book.ID,
 			&book.CreatedAt,
+			&book.UpdatedAt,
 			&book.Title,
 			&book.Author,
 			&book.Language,
