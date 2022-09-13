@@ -24,7 +24,7 @@
                 <tbody>
                     <tr>
                         <th>ID:</th>
-                        <td>{{.Book.Model.ID}}</td>
+                        <td>{{.Book.ID}}</td>
                     </tr>
                     <tr>
                         <th>Titel:</th>
@@ -60,11 +60,11 @@
                     </tr>
                     <tr>
                         <th>Erstellt am:</th>
-                        <td>{{.Book.Model.CreatedAt | humanDate}}</td>
+                        <td>{{.Book.CreatedAt | humanDate}}</td>
                     </tr>
                     <tr>
                         <th>Aktualisiert am:</th>
-                        <td>{{.Book.Model.UpdatedAt | humanDate}}</td>
+                        <td>{{.Book.UpdatedAt | humanDate}}</td>
                     </tr>
                 </tbody>
                 </table>
