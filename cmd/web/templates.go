@@ -1,10 +1,10 @@
 package main
 
 import (
+	"database/sql"
 	"html/template"
 	"io/fs"
 	"path/filepath"
-	"time"
 
 	"github.com/Isotop7/liberator/internal/models"
 	"github.com/Isotop7/liberator/ui"
@@ -23,8 +23,12 @@ type templateData struct {
 	CSRFToken       string
 }
 
-func humanDate(t time.Time) string {
-	return t.Format("02.01.2006 15:04")
+func humanDate(t sql.NullTime) string {
+	if t.Valid {
+		return t.Time.Format("02.01.2006 15:04")
+	} else {
+		return ""
+	}
 }
 
 var functions = template.FuncMap{

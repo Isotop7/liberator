@@ -8,19 +8,19 @@ import (
 
 // Book
 type Book struct {
-	ID        uint      `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt time.Time `json:"deleted_at"`
-	Title     string    `json:"title"`
-	Author    string    `json:"author"`
-	Language  string    `json:"language"`
-	Category  string    `json:"category"`
-	ISBN10    string    `json:"isbn10"`
-	ISBN13    string    `json:"isbn13"`
-	PageCount int       `json:"page_count"`
-	Rating    int       `json:"rating"`
-	Review    string    `json:"review"`
+	ID        uint         `json:"id"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at"`
+	Title     string       `json:"title"`
+	Author    string       `json:"author"`
+	Language  string       `json:"language"`
+	Category  string       `json:"category"`
+	ISBN10    string       `json:"isbn10"`
+	ISBN13    string       `json:"isbn13"`
+	PageCount int          `json:"page_count"`
+	Rating    int          `json:"rating"`
+	Review    string       `json:"review"`
 }
 
 type BookModel struct {
@@ -70,7 +70,7 @@ func (b *BookModel) Get(id int) (*Book, error) {
 	book := &Book{}
 
 	row := b.DB.QueryRow(`
-		SELECT id, created_at, updated_at, title, author, language, category, isbn10, isbn13, page_count, rating, review
+		SELECT id, created_at, updated_at, deleted_at, title, author, language, category, isbn10, isbn13, page_count, rating, review
 		FROM books
 		WHERE id = ?
 		`, id)
@@ -78,6 +78,7 @@ func (b *BookModel) Get(id int) (*Book, error) {
 		&book.ID,
 		&book.CreatedAt,
 		&book.UpdatedAt,
+		&book.DeletedAt,
 		&book.Title,
 		&book.Author,
 		&book.Language,
