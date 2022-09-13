@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"database/sql"
 	"flag"
 	"html/template"
 	"log"
@@ -13,8 +14,7 @@ import (
 	"github.com/Isotop7/liberator/internal/models"
 	"github.com/alexedwards/scs/sqlite3store"
 	"github.com/alexedwards/scs/v2"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // Liberator struct
@@ -41,12 +41,10 @@ func main() {
 
 	// Load or create database
 	infoLog.Print("Setup database ...")
-	db, err := gorm.Open("sqlite3", "liberator.db")
+	db, err := sql.Open("sqlite3", "liberator.db")
 	if err != nil {
 		errorLog.Fatal(err)
 	}
-	db.AutoMigrate(&models.Book{})
-	db.AutoMigrate(&models.User{})
 	defer db.Close()
 
 	// Setup template cache
@@ -57,7 +55,7 @@ func main() {
 
 	// Setup session manager
 	sessionManager := scs.New()
-	sessionManager.Store = sqlite3store.New(db.DB())
+	sessionManager.Store = sqlite3store.New(db)
 	sessionManager.Lifetime = 12 * time.Hour
 	sessionManager.IdleTimeout = 60 * time.Minute
 	sessionManager.Cookie.Secure = true

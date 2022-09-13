@@ -1,8 +1,6 @@
 module github.com/Isotop7/liberator
 
-go 1.18
-
-require github.com/jinzhu/gorm v1.9.16
+go 1.19
 
 require (
 	github.com/alexedwards/scs/sqlite3store v0.0.0-20220528130143-d93ace5be94b // indirect
@@ -15,6 +13,6 @@ require (
 	github.com/justinas/alice v1.2.0 // indirect
 	github.com/justinas/nosurf v1.1.1 // indirect
 	github.com/lib/pq v1.10.0 // indirect
-	github.com/mattn/go-sqlite3 v1.14.10 // indirect
+	github.com/mattn/go-sqlite3 v1.14.15 // indirect
 	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90 // indirect
 )

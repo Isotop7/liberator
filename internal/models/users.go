@@ -1,22 +1,26 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
 	"strings"
+	"time"
 
-	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	gorm.Model
+	ID             uint      `json:"id"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+	DeletedAt      time.Time `json:"deleted_at"`
 	Name           string
-	Email          string `gorm:"unique"`
-	HashedPassword []byte `gorm:"size:60"`
+	Email          string
+	HashedPassword []byte
 }
 
 type UserModel struct {
-	DB *gorm.DB
+	DB *sql.DB
 }
 
 func (u *UserModel) Insert(name, email, password string) error {
@@ -25,36 +29,49 @@ func (u *UserModel) Insert(name, email, password string) error {
 		return err
 	}
 
-	user := User{
-		Name:           name,
-		Email:          email,
-		HashedPassword: hashedPassword,
-	}
+	created_at := time.Now()
 
-	result := u.DB.Create(&user)
-	if result.Error != nil {
-		errMessage := result.Error.Error()
+	_, err = u.DB.Exec(`
+		INSERT INTO users (created_at, name, email, hashed_password)
+		VALUES (?, ?, ?, ?)
+	`, created_at, name, email, hashedPassword)
+
+	if err != nil {
+		errMessage := err.Error()
 		if strings.Compare(errMessage, "UNIQUE constraint failed: users.email") == 0 {
 			return ErrDuplicateEmail
 		}
-		return result.Error
+		return err
 	}
 	return nil
 }
 
 func (u *UserModel) Authenticate(email, password string) (int, error) {
-	user := User{}
-	result := u.DB.Where(&User{Email: email}).First(&user)
+	user := &User{}
 
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	row := u.DB.QueryRow(`
+		SELECT id, name, email, hashed_password
+		FROM users
+		WHERE email = ?
+		LIMIT 1
+	`, email)
+
+	err := row.Scan(
+		&user.ID,
+		&user.Name,
+		&user.Email,
+		&user.HashedPassword,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
 			return 0, ErrInvalidCredentials
 		} else {
-			return 0, result.Error
+			return 0, err
 		}
 	}
 
-	err := bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password))
+	err = bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password))
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 			return 0, ErrInvalidCredentials
@@ -63,23 +80,37 @@ func (u *UserModel) Authenticate(email, password string) (int, error) {
 		}
 	}
 
-	return int(user.Model.ID), nil
+	return int(user.ID), nil
 }
 
 func (u *UserModel) Exists(id int) (bool, error) {
-	user := User{}
-	result := u.DB.First(&user, id)
+	user := &User{}
 
-	if result.RowsAffected > 0 {
+	row := u.DB.QueryRow(`
+		SELECT id, name, email, hashed_password
+		FROM users
+		WHERE id = ?
+		LIMIT 1
+	`, id)
+
+	err := row.Scan(
+		&user.ID,
+		&user.Name,
+		&user.Email,
+		&user.HashedPassword,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, ErrInvalidCredentials
+		} else {
+			return false, err
+		}
+	}
+
+	if user.ID != 0 {
 		return true, nil
 	} else {
-		if result.Error != nil {
-			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-				return false, nil
-			} else {
-				return false, result.Error
-			}
-		}
 		return false, nil
 	}
 }
