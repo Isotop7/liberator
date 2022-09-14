@@ -63,10 +63,9 @@ If you need anything or have any ideas, please log them under issues.
 
 ## Credits
 
-- [Lets Go from](https://lets-go.alexedwards.net/)
-- [Bumla.io](https://bulma.io/)
+- [Lets Go](https://lets-go.alexedwards.net/)
+- [Bulma.io](https://bulma.io/)
 - [Ionicons](https://ionic.io/ionicons)
-- [Gorm](https://gorm.io/index.html)
 
 
 ## Contributing to liberator
