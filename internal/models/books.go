@@ -53,7 +53,7 @@ func (b *BookModel) Insert(title string, author string, language string, categor
 
 	result, err := b.DB.Exec(`
 			INSERT INTO books (created_at, updated_at, title, author, language, category, isbn10, isbn13, page_count, rating, review)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, timestamp, timestamp, title, author, language, category, isbn10, isbn13, pagecount, rating, review)
 
 	if err != nil {

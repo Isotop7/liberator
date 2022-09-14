@@ -98,7 +98,12 @@
                         <label>ISBN-10:</label>
                     </div>
                     <div class="level-right column">
-                        <input class="input is-rounded is-primary" type="text" name="isbn10">
+                        <input class="input is-rounded is-primary" type="text" name="isbn10" value="{{if .Form.ISBN10}}{{.Form.ISBN10}}{{end}}">
+                        {{with .Form.FieldErrors.isbn10}}
+                        <div>
+                            <span class="tag is-warning">{{.}}</span>
+                        </div>
+                        {{end}}
                     </div>
                 </div>
                 <div class="level columns">
@@ -106,7 +111,12 @@
                         <label>ISBN-13:</label>
                     </div>
                     <div class="level-right column">
-                        <input class="input is-rounded is-primary" type="text" name="isbn13">
+                        <input class="input is-rounded is-primary" type="text" name="isbn13" value="{{if .Form.ISBN13}}{{.Form.ISBN13}}{{end}}">
+                        {{with .Form.FieldErrors.isbn13}}
+                        <div>
+                            <span class="tag is-warning">{{.}}</span>
+                        </div>
+                        {{end}}
                     </div>
                 </div>
                 <div class="columns is-mobile is-pulled-right my-3">

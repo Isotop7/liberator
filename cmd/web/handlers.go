@@ -143,6 +143,12 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 	// Check for invalid rating
 	form.CheckField(validator.InBounds(form.Rating, 1, 10), "rating", validator.ValueMustBeInRange(1, 10))
 
+	// Check for invalid ISBN-10
+	form.CheckField(validator.IsValidISBN10(form.ISBN10), "isbn10", validator.InvalidISBN)
+
+	// Check for invalid ISBN-13
+	form.CheckField(validator.IsValidISBN13(form.ISBN13), "isbn13", validator.InvalidISBN)
+
 	// If errors are found, show them and redirect to form
 	if !form.Valid() {
 		data := liberator.newTemplateData(r)

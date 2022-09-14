@@ -3,6 +3,7 @@ package validator
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 )
@@ -11,6 +12,7 @@ var EmailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z
 
 var ValueMustNotBeEmpty = "Dieses Feld darf nicht leer sein"
 var ValueInvalidEmail = "Das Format der eingegebenen Email wird nicht erkannt"
+var InvalidISBN = "Fehlerhafte ISBN-Nummer"
 
 type Validator struct {
 	NonFieldErrors []string
@@ -43,6 +45,62 @@ func (v *Validator) CheckField(ok bool, key, message string) {
 
 func NotBlank(value string) bool {
 	return strings.TrimSpace(value) != ""
+}
+
+func IsValidISBN10(isbn string) bool {
+	// Check if ISBN-10 is empty
+	if isbn == "" {
+		return true
+	}
+
+	var digits []int
+
+	// Split string into digits
+	for _, r := range isbn {
+		digit, err := strconv.Atoi(string(r))
+		if err == nil {
+			digits = append(digits, digit)
+		}
+	}
+
+	// Check if 10 digits were supplied
+	if len(digits) == 10 {
+		// Calculate checksum which should be zero
+		sum := 0
+		for i := 1; i <= len(digits); i++ {
+			sum = sum + (i * digits[i-1])
+		}
+		checksum := sum % 11
+		return checksum == 0
+	} else {
+		return false
+	}
+}
+
+func IsValidISBN13(isbn string) bool {
+	// Check if ISBN-13 is empty
+	if isbn == "" {
+		return true
+	}
+
+	var digits []int
+
+	// Split string into digits
+	for _, r := range isbn {
+		digit, err := strconv.Atoi(string(r))
+		if err == nil {
+			digits = append(digits, digit)
+		}
+	}
+
+	// Check if 13 digits were supplied
+	if len(digits) == 13 {
+		// Calculate checksum which should be zero
+		checksum := (digits[0] + digits[2] + digits[4] + digits[6] + digits[8] + digits[10] + digits[12] + 3*(digits[1]+digits[3]+digits[5]+digits[7]+digits[9]+digits[11])) % 10
+		return checksum == 0
+	} else {
+		return false
+	}
 }
 
 func MaxChars(value string, n int) bool {
