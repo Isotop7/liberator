@@ -1,9 +1,54 @@
 {{define "footer"}}
 <footer class="footer has-background-info has-text-white-ter">
-  <div class="content has-text-centered">
-    <p>
-      anno {{.CurrentYear}}
-    </p>
+  <div class="section content">
+    <div class="columns">
+      <div class="column is-one-fifth is-offset-one-fifth">
+        <div>
+          <p class="is-size-4 has-text-weight-bold">
+            liberator
+          </p>
+          <p class="is-italic">
+            Small webapp to keep track of your books 
+          </p>
+        </div>
+        <div class="mt-6">
+          <p class="is-size-5">
+            Credits:
+            <p>
+              <a href="https://lets-go.alexedwards.net/" target="_blank">Lets-Go</a>
+            </p>
+            <p>
+              <a href="https://bulma.io" target="_blank">Bulma.io</a>
+            </p>
+          </p>
+        </div>
+      </div>
+      <div class="column is-one-fifth is-offset-one-fifth">
+        <p class="is-size-4">
+          Contact:
+        </p>
+        <p>
+          <a href="https://github.com/Isotop7" target="_blank">
+            <span class="icon-text contact-icon-text">
+              <span class="icon contact-icon">
+                <img src="/static/icons/logo-github.svg" alt="Github" width="48" height="48"> 
+              </span>
+              <span>Github</span>
+            </span>
+          </a>
+        </p>
+        <p>
+          <a href="mailto:hendrik@hr94.de">
+            <span class="icon-text contact-icon-text">
+              <span class="icon contact-icon">
+                <img src="/static/icons/mail-open-outline.svg" alt="Mail" width="48" height="48"> 
+              </span>
+              <span>hendrik@hr94.de</span>
+            </span>
+          </a>
+        </p>
+      </div>
+    </div>
   </div>
 </footer>
 {{end}}
