@@ -7927,3 +7927,17 @@ body {
 
 #content {
   flex: 1; }
+
+.contact-icon {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  height: 2rem;
+  width: 2rem; }
+
+.contact-icon-text {
+  color: inherit;
+  line-height: 2rem; }
+
+.icon-text .icon:not(:last-child) {
+  margin-right: 0.75em; }
