@@ -43,10 +43,6 @@
                         <td>{{.Book.Category}}</td>
                     </tr>
                     <tr>
-                        <th>Bewertung:</th>
-                        <td>{{.Book.Rating}}</td>
-                    </tr>
-                    <tr>
                         <th>Seitenanzahl:</th>
                         <td>{{.Book.PageCount}}</td>
                     </tr>
@@ -68,6 +64,10 @@
                     </tr>
                 </tbody>
                 </table>
+                {{if not .BookIsAssigned}}
+                <!-- BUTTON -->
+                <p>Assign</p>
+                {{end}}
             </div>
         </div>
     </div>

@@ -16,6 +16,7 @@ type templateData struct {
 	Books           []*models.Book
 	LatestBooks     []*models.Book
 	ActiveBooks     []*models.Book
+	BookIsAssigned  bool
 	SumPageCount    int
 	Form            any
 	Flash           string

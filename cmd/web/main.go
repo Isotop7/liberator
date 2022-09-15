@@ -19,12 +19,13 @@ import (
 
 // Liberator struct
 type liberator struct {
-	errorLog       *log.Logger
-	infoLog        *log.Logger
-	books          *models.BookModel
-	users          *models.UserModel
-	templateCache  map[string]*template.Template
-	sessionManager *scs.SessionManager
+	errorLog             *log.Logger
+	infoLog              *log.Logger
+	books                *models.BookModel
+	users                *models.UserModel
+	booksUsersAssignment *models.BooksUserAssignmentModel
+	templateCache        map[string]*template.Template
+	sessionManager       *scs.SessionManager
 }
 
 // Main function
@@ -62,12 +63,13 @@ func main() {
 
 	// Setup shared struct
 	liberator := &liberator{
-		infoLog:        infoLog,
-		errorLog:       errorLog,
-		books:          &models.BookModel{DB: db},
-		users:          &models.UserModel{DB: db},
-		templateCache:  templateCache,
-		sessionManager: sessionManager,
+		infoLog:              infoLog,
+		errorLog:             errorLog,
+		books:                &models.BookModel{DB: db},
+		users:                &models.UserModel{DB: db},
+		booksUsersAssignment: &models.BooksUserAssignmentModel{DB: db},
+		templateCache:        templateCache,
+		sessionManager:       sessionManager,
 	}
 
 	// TLS config
