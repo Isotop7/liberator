@@ -179,6 +179,98 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 	http.Redirect(w, r, fmt.Sprintf("/book/view/%d", id), http.StatusSeeOther)
 }
 
+func (liberator *liberator) bookAssignPost(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	// Convert bookID
+	bookID, err := strconv.Atoi(r.PostForm.Get("bookID"))
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	book, err := liberator.books.Get(bookID)
+
+	// If error while getting book
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	// Check if book is already assigned
+	alreadyAssigned := liberator.booksUsersAssignment.IsCurrentlyAssigned(int(book.ID))
+
+	if alreadyAssigned {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	// Get user id
+	userid := liberator.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	// Insert assignment into database
+	_, err = liberator.booksUsersAssignment.Assign(bookID, userid)
+
+	// If error while inserting
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	// Save success message to session data
+	liberator.sessionManager.Put(r.Context(), "flash", "Buch wurde ausgeliehen!")
+
+	// Redirect to view
+	http.Redirect(w, r, fmt.Sprintf("/book/view/%d", bookID), http.StatusSeeOther)
+}
+
+func (liberator *liberator) bookUnassignPost(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	// Convert bookID
+	bookID, err := strconv.Atoi(r.PostForm.Get("bookID"))
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	book, err := liberator.books.Get(bookID)
+
+	// If error while getting book
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	// Get user id
+	userid := liberator.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	// Check if book is assigned to user
+	isAssignedToUser := liberator.booksUsersAssignment.IsCurrentlyAssignedToUser(int(book.ID), userid)
+
+	if !isAssignedToUser {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	// Insert assignment into database
+	_, err = liberator.booksUsersAssignment.UpdateAssignmentState(bookID, userid, models.Inactive)
+
+	// If error while inserting
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	// Save success message to session data
+	liberator.sessionManager.Put(r.Context(), "flash", "Buch wurde zurückgegeben!")
+
+	// Redirect to view
+	http.Redirect(w, r, fmt.Sprintf("/book/view/%d", bookID), http.StatusSeeOther)
+}
+
 func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
 	// Parse parameters
 	params := httprouter.ParamsFromContext(r.Context())
