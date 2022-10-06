@@ -33,6 +33,7 @@ func (liberator *liberator) routes() http.Handler {
 	router.Handler(http.MethodPost, "/user/login", publicCalls.ThenFunc(liberator.userLoginPost))
 
 	protectedCalls := publicCalls.Append(liberator.requireAuthentication)
+	router.Handler(http.MethodGet, "/toBeRead", protectedCalls.ThenFunc(liberator.toBeRead))
 	router.Handler(http.MethodGet, "/book/view/:id", protectedCalls.ThenFunc(liberator.bookView))
 	router.Handler(http.MethodGet, "/book/create", protectedCalls.ThenFunc(liberator.bookCreate))
 	router.Handler(http.MethodPost, "/book/create", protectedCalls.ThenFunc(liberator.bookCreatePost))

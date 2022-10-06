@@ -6,13 +6,19 @@ import (
 	"time"
 )
 
-type BooksUserAssignment struct {
+type BookUserAssignment struct {
 	ID        uint
+	CreatedAt sql.NullTime
 	UserID    int
 	BookID    int
 	Status    AssignmentStatus
 	PagesRead int
 	Rating    int
+}
+
+type BookWithProgress struct {
+	Book     *Book
+	Progress *BookUserAssignment
 }
 
 type BooksUserAssignmentModel struct {
@@ -82,8 +88,58 @@ func (bua *BooksUserAssignmentModel) GetActiveBooks(userid int) ([]*Book, error)
 	return books, nil
 }
 
+func (bua *BooksUserAssignmentModel) GetActiveBooksWithProgress(userid int) ([]*BookWithProgress, error) {
+	var booksWithProgress = []*BookWithProgress{}
+
+	rows, err := bua.DB.Query(`
+		SELECT b.id, b.created_at, b.updated_at, title, author, language, category, isbn10, isbn13, page_count, bua.id, bua.created_at, pages_read, bua.rating
+		FROM books b, books_users_assignment bua
+		WHERE b.id == bua.books_id
+		AND (status = ? OR status = ?) 
+		AND bua.user_id = ?
+		`, Assigned.String(), Active.String(), userid)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		book := &Book{}
+		progress := &BookUserAssignment{}
+
+		err := rows.Scan(
+			&book.ID,
+			&book.CreatedAt,
+			&book.UpdatedAt,
+			&book.Title,
+			&book.Author,
+			&book.Language,
+			&book.Category,
+			&book.ISBN10,
+			&book.ISBN13,
+			&book.PageCount,
+			&progress.ID,
+			&progress.CreatedAt,
+			&progress.PagesRead,
+			&progress.Rating,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		bookWithProgress := &BookWithProgress{
+			Book:     book,
+			Progress: progress,
+		}
+		booksWithProgress = append(booksWithProgress, bookWithProgress)
+	}
+
+	return booksWithProgress, nil
+}
+
 func (bua *BooksUserAssignmentModel) IsCurrentlyAssigned(bookid int) bool {
-	bookUserAssignment := &BooksUserAssignment{}
+	bookUserAssignment := &BookUserAssignment{}
 
 	row := bua.DB.QueryRow(`
 		SELECT id, user_id, books_id, status, pages_read, rating
@@ -114,7 +170,7 @@ func (bua *BooksUserAssignmentModel) IsCurrentlyAssigned(bookid int) bool {
 }
 
 func (bua *BooksUserAssignmentModel) IsCurrentlyAssignedToUser(bookid int, userid int) bool {
-	bookUserAssignment := &BooksUserAssignment{}
+	bookUserAssignment := &BookUserAssignment{}
 
 	row := bua.DB.QueryRow(`
 		SELECT id, user_id, books_id, status, pages_read, rating

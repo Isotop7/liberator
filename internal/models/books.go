@@ -31,7 +31,7 @@ func (b *BookModel) Insert(title string, author string, language string, categor
 
 	result, err := b.DB.Exec(`
 			INSERT INTO books (created_at, updated_at, title, author, language, category, isbn10, isbn13, page_count, review)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, timestamp, timestamp, title, author, language, category, isbn10, isbn13, pagecount, review)
 
 	if err != nil {
@@ -78,7 +78,6 @@ func (b *BookModel) Get(id int) (*Book, error) {
 	return book, nil
 }
 
-// This will return the 10 most recently created snippets.
 func (b *BookModel) Latest(limit int) ([]*Book, error) {
 	var books = []*Book{}
 

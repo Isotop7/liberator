@@ -69,6 +69,22 @@ func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 	liberator.render(w, http.StatusOK, "dashboard.tmpl", data)
 }
 
+func (liberator *liberator) toBeRead(w http.ResponseWriter, r *http.Request) {
+	// Get user id
+	id := liberator.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+	// Get active books
+	activeBooksWithProgress, err := liberator.booksUsersAssignment.GetActiveBooksWithProgress(id)
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	data := liberator.newTemplateData(r)
+	data.ActiveBooksWithProgress = activeBooksWithProgress
+
+	liberator.render(w, http.StatusOK, "toBeRead.tmpl", data)
+}
+
 func (liberator *liberator) searchView(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -416,5 +432,5 @@ func (liberator *liberator) userLogoutPost(w http.ResponseWriter, r *http.Reques
 
 	liberator.sessionManager.Remove(r.Context(), "authenticatedUserID")
 	liberator.sessionManager.Put(r.Context(), "flash", "Du wurdest abgemeldet!")
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
