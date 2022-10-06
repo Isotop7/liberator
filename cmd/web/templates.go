@@ -11,16 +11,18 @@ import (
 )
 
 type templateData struct {
-	CurrentYear     int
-	Book            *models.Book
-	Books           []*models.Book
-	LatestBooks     []*models.Book
-	ActiveBooks     []*models.Book
-	SumPageCount    int
-	Form            any
-	Flash           string
-	IsAuthenticated bool
-	CSRFToken       string
+	CurrentYear             int
+	Book                    *models.Book
+	Books                   []*models.Book
+	LatestBooks             []*models.Book
+	ActiveBooks             []*models.Book
+	ActiveBooksWithProgress []*models.BookWithProgress
+	BookIsAssigned          bool
+	SumPageCount            int
+	Form                    any
+	Flash                   string
+	IsAuthenticated         bool
+	CSRFToken               string
 }
 
 func humanDate(t sql.NullTime) string {

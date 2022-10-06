@@ -33,10 +33,13 @@ func (liberator *liberator) routes() http.Handler {
 	router.Handler(http.MethodPost, "/user/login", publicCalls.ThenFunc(liberator.userLoginPost))
 
 	protectedCalls := publicCalls.Append(liberator.requireAuthentication)
+	router.Handler(http.MethodGet, "/toBeRead", protectedCalls.ThenFunc(liberator.toBeRead))
 	router.Handler(http.MethodGet, "/book/view/:id", protectedCalls.ThenFunc(liberator.bookView))
-	router.Handler(http.MethodPost, "/search", protectedCalls.ThenFunc(liberator.searchView))
 	router.Handler(http.MethodGet, "/book/create", protectedCalls.ThenFunc(liberator.bookCreate))
 	router.Handler(http.MethodPost, "/book/create", protectedCalls.ThenFunc(liberator.bookCreatePost))
+	router.Handler(http.MethodPost, "/book/assign", protectedCalls.ThenFunc(liberator.bookAssignPost))
+	router.Handler(http.MethodPost, "/book/unassign", protectedCalls.ThenFunc(liberator.bookUnassignPost))
+	router.Handler(http.MethodPost, "/search", protectedCalls.ThenFunc(liberator.searchView))
 	router.Handler(http.MethodPost, "/user/logout", protectedCalls.ThenFunc(liberator.userLogoutPost))
 
 	// Default middleware chain

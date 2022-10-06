@@ -36,6 +36,12 @@
           </div>
         </a>
         {{if .IsAuthenticated}}
+        <a href="/toBeRead" class="navbar-item container has-text-centered">
+          <div>
+            <img class="navbar-button" src="/static/icons/library-outline.svg" alt="SUB">
+            <div class="image-sub">SUB</div>
+          </div>
+        </a>
         <a href="/book/create" class="navbar-item container has-text-centered">
           <div>
             <img class="navbar-button" src="/static/icons/add-circle-outline.svg" alt="Login">
@@ -70,6 +76,7 @@
         {{if .IsAuthenticated}}
         <a class="navbar-item container has-text-centered logoutWrapper">
           <form action="/user/logout" method="POST">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
             <button id="logoutButton">
               <img class="navbar-button" src="/static/icons/log-out-outline.svg" alt="Login">
             </button>

@@ -19,11 +19,6 @@
           <div>
             <p>Genre: {{.Category}}</p>
             <p>Geschrieben in {{.Language}}</p>
-            <p>Bewertung: 
-                <span class="{{if gt .Rating 7}}has-text-success{{else if gt .Rating 3}}has-text-warning{{else}}has-text-danger{{end}}">
-                    {{.Rating}} von 10
-                </span>
-            </p>
             <p><time datetime="2016-1-1">Erstellungsdatum: {{.CreatedAt | humanDate}}</time></p>
           </div>
         </div>

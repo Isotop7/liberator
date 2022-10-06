@@ -19,7 +19,6 @@ type bookCreateForm struct {
 	ISBN10    string
 	ISBN13    string
 	Pagecount int
-	Rating    int
 	Review    string
 	validator.Validator
 }
@@ -51,14 +50,39 @@ func (liberator *liberator) dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get user id
+	id := liberator.sessionManager.GetInt(r.Context(), "authenticatedUserID")
 	// Get sum page count
-	sumPageCount := liberator.books.SumPageCount()
+	sumPageCount := liberator.booksUsersAssignment.SumPageCount(id)
+	// Get active books
+	activeBooks, err := liberator.booksUsersAssignment.GetActiveBooks(id)
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
 
 	data := liberator.newTemplateData(r)
 	data.LatestBooks = latestBooks
+	data.ActiveBooks = activeBooks
 	data.SumPageCount = sumPageCount
 
 	liberator.render(w, http.StatusOK, "dashboard.tmpl", data)
+}
+
+func (liberator *liberator) toBeRead(w http.ResponseWriter, r *http.Request) {
+	// Get user id
+	id := liberator.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+	// Get active books
+	activeBooksWithProgress, err := liberator.booksUsersAssignment.GetActiveBooksWithProgress(id)
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	data := liberator.newTemplateData(r)
+	data.ActiveBooksWithProgress = activeBooksWithProgress
+
+	liberator.render(w, http.StatusOK, "toBeRead.tmpl", data)
 }
 
 func (liberator *liberator) searchView(w http.ResponseWriter, r *http.Request) {
@@ -106,12 +130,6 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 		liberator.clientError(w, http.StatusBadRequest)
 	}
 
-	// Convert rating
-	rating, err := strconv.Atoi(r.PostForm.Get("rating"))
-	if err != nil {
-		liberator.clientError(w, http.StatusBadRequest)
-	}
-
 	// Init struct form
 	form := bookCreateForm{
 		Title:     r.PostForm.Get("title"),
@@ -121,7 +139,6 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 		ISBN10:    r.PostForm.Get("isbn10"),
 		ISBN13:    r.PostForm.Get("isbn13"),
 		Pagecount: pagecount,
-		Rating:    rating,
 		Review:    r.PostForm.Get("review"),
 	}
 
@@ -139,9 +156,6 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 
 	// Check for invalid page count
 	form.CheckField(validator.GreaterThan(form.Pagecount, 0), "pagecount", validator.ValueMustBeGreaterThan(0))
-
-	// Check for invalid rating
-	form.CheckField(validator.InBounds(form.Rating, 1, 10), "rating", validator.ValueMustBeInRange(1, 10))
 
 	// Check for invalid ISBN-10
 	form.CheckField(validator.IsValidISBN10(form.ISBN10), "isbn10", validator.InvalidISBN)
@@ -166,7 +180,6 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 		form.ISBN10,
 		form.ISBN13,
 		form.Pagecount,
-		form.Rating,
 		form.Review)
 
 	// If error while inserting
@@ -180,6 +193,98 @@ func (liberator *liberator) bookCreatePost(w http.ResponseWriter, r *http.Reques
 
 	// Redirect to view
 	http.Redirect(w, r, fmt.Sprintf("/book/view/%d", id), http.StatusSeeOther)
+}
+
+func (liberator *liberator) bookAssignPost(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	// Convert bookID
+	bookID, err := strconv.Atoi(r.PostForm.Get("bookID"))
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	book, err := liberator.books.Get(bookID)
+
+	// If error while getting book
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	// Check if book is already assigned
+	alreadyAssigned := liberator.booksUsersAssignment.IsCurrentlyAssigned(int(book.ID))
+
+	if alreadyAssigned {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	// Get user id
+	userid := liberator.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	// Insert assignment into database
+	_, err = liberator.booksUsersAssignment.Assign(bookID, userid)
+
+	// If error while inserting
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	// Save success message to session data
+	liberator.sessionManager.Put(r.Context(), "flash", "Buch wurde ausgeliehen!")
+
+	// Redirect to view
+	http.Redirect(w, r, fmt.Sprintf("/book/view/%d", bookID), http.StatusSeeOther)
+}
+
+func (liberator *liberator) bookUnassignPost(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	// Convert bookID
+	bookID, err := strconv.Atoi(r.PostForm.Get("bookID"))
+	if err != nil {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	book, err := liberator.books.Get(bookID)
+
+	// If error while getting book
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	// Get user id
+	userid := liberator.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	// Check if book is assigned to user
+	isAssignedToUser := liberator.booksUsersAssignment.IsCurrentlyAssignedToUser(int(book.ID), userid)
+
+	if !isAssignedToUser {
+		liberator.clientError(w, http.StatusBadRequest)
+	}
+
+	// Insert assignment into database
+	_, err = liberator.booksUsersAssignment.UpdateAssignmentState(bookID, userid, models.Inactive)
+
+	// If error while inserting
+	if err != nil {
+		liberator.serverError(w, err)
+		return
+	}
+
+	// Save success message to session data
+	liberator.sessionManager.Put(r.Context(), "flash", "Buch wurde zurückgegeben!")
+
+	// Redirect to view
+	http.Redirect(w, r, fmt.Sprintf("/book/view/%d", bookID), http.StatusSeeOther)
 }
 
 func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
@@ -205,8 +310,12 @@ func (liberator *liberator) bookView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check book assignment state
+	bookIsAssigned := liberator.booksUsersAssignment.IsCurrentlyAssigned(id)
+
 	data := liberator.newTemplateData(r)
 	data.Book = book
+	data.BookIsAssigned = bookIsAssigned
 
 	liberator.render(w, http.StatusOK, "bookView.tmpl", data)
 }
@@ -323,5 +432,5 @@ func (liberator *liberator) userLogoutPost(w http.ResponseWriter, r *http.Reques
 
 	liberator.sessionManager.Remove(r.Context(), "authenticatedUserID")
 	liberator.sessionManager.Put(r.Context(), "flash", "Du wurdest abgemeldet!")
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }

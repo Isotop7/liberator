@@ -1,0 +1,54 @@
+{{ define "main" }}
+<section class="hero has-background-info">
+    <div class="hero-body container has-text-centered is-widescreen">
+        <p class="title">
+            Stapel ungelesener Bücher:
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-widescreen">
+        {{if .ActiveBooksWithProgress}}
+        {{ range .ActiveBooksWithProgress }}
+        <div class="box">
+            <div class="columns">
+                <div class="column">
+                    <p class="title is-4">
+                        <a href="/book/view/{{.Book.ID}}"> "{{.Book.Title}}" </a>
+                    </p>
+                    <p class="subtitle is-5">von {{.Book.Author}}</p>
+                </div>
+                <div class="column">
+                    <div>
+                        <p>Genre: {{.Book.Category}}</p>
+                        <p>Geschrieben in {{.Book.Language}}</p>
+                        <p><time datetime="2016-1-1">Ausgeliehen: {{.Progress.CreatedAt | humanDate}}</time></p>
+                    </div>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <div>
+                        <!-- TODO: Fortschrittsbalken implementieren -->
+                        placeholder
+                    </div>
+                    <div>
+                        {{.Progress.PagesRead}} von {{.Book.PageCount}} Seiten gelesen
+                    </div>
+                </div>
+                <div class="column">
+                    <!--TODO: UI-Design des Ratings? farbige Hinterlegung? -->
+                    Bewertung: {{.Progress.Rating}} von 10 Punkten
+                </div>
+            </div>
+        </div>
+        {{ end }}
+        {{ else }}
+        <div class="container">
+            <h2 class="subtitle">Keine aktiven Bücher gefunden!</h2>
+        </div>
+        {{ end }}
+    </div>
+</section>
+{{ end }}
